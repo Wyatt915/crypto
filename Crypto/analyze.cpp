@@ -2,7 +2,12 @@
 #include <algorithm>
 #include <math.h>
 #include <iostream>
-//in must be UPPERCASE
+
+
+/**
+*  Counts the number of instances of each character from A to Z.
+*  @param in must be UPPERCASE
+*/
 array<int, 26> countchars(string in){
 	array<int, 26> out;
 
@@ -14,6 +19,9 @@ array<int, 26> countchars(string in){
 	return out;
 }
 
+/**
+*  Finds the frequency of occurance of each letter in a given string.
+*/
 array<float, 26> frequency(string in){
 	array<int, 26> count = countchars(in);
 	int sum = accumulate(count.begin(), count.end(), 0);
@@ -24,10 +32,14 @@ array<float, 26> frequency(string in){
 	return freq;
 }
 
-void print_histogram(string in){
+/**
+*  Prints a histogram of letter frequency.
+*  @param in String to be analyzed.
+*  @param resolution the height of the graph, in lines.
+*/
+void print_histogram(string in, int resolution){
 	array<float, 26> freq = frequency(in);
 	float max_val = *max_element(freq.begin(), freq.end());
-	int resolution = 20;
 
 	for (int i = 0, j = resolution; i < resolution; i++, j--){
 		cout << ' ';
@@ -52,6 +64,22 @@ void print_histogram(string in){
 	cout << '\n';
 }
 
+
+/**
+*  Produces the character pattern of a given word.
+*  For example, the input "ENCRYPTS" would give the output "********" because
+*  each character in the word is unique, i.e. none of the letters repeat. In contrast, 
+*  The word "QUANTITATIVE" results in a pattern of "**A*BCBABC**" because the letter A
+*  is the first letter that gets repeated, and it occurs in the 3rd and 8th positions.
+*  Next, N is repeated, and since it is the second unique letter that is repeated, it is
+*  called B in the pattern output. The second repeat letter occurs at positions 5, 7, and 9.
+*
+*  The reason for using the letters A, B, C...Z (in order) to represent other letters
+*  is because if a word goes through a substitution cipher, its resultant pattern will
+*  not change. For instance the pattern of "AGRICULTURALISTS" is "A*BC*DEFDBAECGFG". If
+*  If AGRICULTURALISTS is passed through a substitution cipher, it will come out as something
+*  like QUKOEXSZXKQSOLZL, but the pattern will remain as "A*BC*DEFDBAECGFG".
+*/
 string char_pattern(string in){
 	capitalize(in);
 	const int l = in.length();

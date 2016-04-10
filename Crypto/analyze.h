@@ -9,4 +9,4 @@ string char_pattern(string in);
 
 //[in] must be UPPERCASE
 array<int, 26> countchars(string in);
-void print_histogram(string in);
+void print_histogram(string in, int resolution);
