@@ -114,3 +114,159 @@ string char_pattern(string in){
 
 	return out;
 }
+
+string generate_key(vector<ChaPair> map){
+	string out = string(26, '*');
+	for (size_t i = 0; i < map.size(); i++)
+	{
+		out[map[i].x - 'A'] = map[i].mapsTo;
+	}
+	return out;
+}
+
+//x and mapsto will always be the same length
+vector<ChaPair> make_chapair_vec(string x, string mapsto){
+	vector<ChaPair> out;
+	ChaPair temp;
+	for (size_t i = 0; i < x.length(); i++)
+	{
+		temp.x = x[i];
+		temp.mapsTo = mapsto[i];
+		out.push_back(temp);
+	}
+	return out;
+}
+
+//returns a single key from a vector of incomplete keys
+//which have been determined not to conflict.
+string merge_keys(vector<string> keys){
+	string out = string(26, '*');	//26 '*'s
+	for (size_t i = 0; i < keys.size(); i++)
+	{
+		for (size_t j = 0; j < keys[i].length(); j++)
+		{
+			if (keys[i][j] != '*'){
+				out[j] = keys[i][j];
+			}
+		}
+	}
+	return out;
+}
+
+string merge_keys(string key1, string key2){
+	string out = string(26, '*');	//26 '*'s
+	for (int i = 0; i < 26; i++){
+		if (key1[i] != '*'){
+			out[i] = key1[i];
+		}
+	}
+	for (int i = 0; i < 26; i++){
+		if (key2[i] != '*'){
+			out[i] = key2[i];
+		}
+	}
+	return out;
+}
+
+//finds if 2 full or partial keys will not produce the same result
+bool key_conflict(string key1, string key2){
+	for (size_t i = 0; i < key1.length(); i++)
+	{
+		if (key1[i] != key2[i] && (key1[i] != '*' && key2[i] != '*')){
+			//if the ith char of key1 is not the same as the ith char of key2
+			//and the ith char of either is not a '*', then the keys are in conflict.
+			return true;
+		}
+
+	}
+	string t1, t2;
+	t1 = key1;
+	t2 = key2;
+	t1 = merge_keys(t1, t2);
+	remove_dpw(t1);
+	bool accounted[26] = { 0 };
+	for (int i = 0; i < t1.length(); i++){
+		//if the char at i has already been accounted for then
+		//it is a duplicate and therefore the keys conflict.
+		if (accounted[t1[i] - 'A']){ return true; }
+		else { accounted[t1[i] - 'A'] = true; }
+	}
+	return false;
+}
+
+//----------------[Graph Junk]---------------
+
+Graph::Graph(const vector<vector<string> >& data){
+	verts = data;
+	key = string(26, '*');
+}
+
+vector<string> Graph::getKeyList(){
+	return keylist;
+}
+
+/**
+*  Depth-first traversal
+*/
+void Graph::dft(unsigned int col, unsigned int row){
+	//If there are no previous columns and we have gone past the end of the current column
+	if (col == 0 && row >= verts[col].size()){
+		return;
+	}
+	//If we have gone past the end of the current column
+	if (row >= verts[col].size()){
+		int backOfPath = path.back();
+		path.pop_back();	//remove so it can be replaced.
+		dft(col - 1, backOfPath + 1);	//move to the previous column and down one row
+		return;
+	}
+	if (col == 0){
+		path.clear();
+		keysFromPath.clear();
+		path.push_back(row);
+		keysFromPath.push_back(verts[col][row]);
+		dft(col + 1, 0);
+		return;
+	}
+	else {
+		//if the current vert does not conflict with those before it
+		if (!key_conflict(verts[col][row], key)){
+			path.push_back(row);
+			key = merge_keys(keysFromPath.back(), verts[col][row]);
+			keysFromPath.push_back(key);
+			if (col < verts.size() - 1){
+				dft(col + 1, 0);			//if the next column exists, go to it.
+				cout << '.';
+			}
+			else {							//if the next column does not exist
+				cout << "\n\nSUCCESS\n\n";
+				paths.push_back(path);	//we have a completed path. add it to the list.
+				keylist.push_back(keysFromPath.back());
+				path.pop_back();			//remove the last index from the path
+				keysFromPath.pop_back();
+				//If we are not in the last row of the current column
+				if (row < verts[col].size()) {
+					dft(col, row + 1);	//move down the column
+				}
+				//if we are in the last row of the current column
+				else{
+					dft(col - 1, path.back() + 1);	//move to the previous column and down one row
+				}
+			}
+		}
+		//if the current vert does not qualify to our rule
+		else{
+			//If we are not in the last row of the current column
+			if (row < verts[col].size()) {
+				dft(col, row + 1);	//move down the column
+			}
+			//if we are in the last row of the current column
+			else if (col > 0){
+				int backOfPath = path.back();
+				path.pop_back();				//remove so it can be replaced.
+				keysFromPath.pop_back();
+				dft(col - 1, backOfPath + 1);//move to the previous column and down one row
+			}
+		}
+	}
+}

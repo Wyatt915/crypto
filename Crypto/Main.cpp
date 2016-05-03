@@ -23,10 +23,6 @@ const int ALPHA = 26;
 str_2D sorted;
 str_2D psorted;
 
-struct ChaPair{
-	char x, mapsTo;
-};
-
 struct IntPair{
 	int x, y;
 };
@@ -96,78 +92,15 @@ strvec match_by_pattern(string in){
 	return out;
 }
 
-string generate_key(vector<ChaPair> map){
-	string out = "**************************";
-	for (size_t i = 0; i < map.size(); i++)
-	{
-		out[map[i].x - 'A'] = map[i].mapsTo;
-	}
-	return out;
-}
+//struct Graph{
+//	std::vector<int> path;
+//	vector<vector<int> > paths;
+//	std::vector<std::vector<string> > verts;
+//	string key;
+//	strvec keylist;
+//};
 
-//x and mapsto will always be the same length
-vector<ChaPair> make_chapair_vec(string x, string mapsto){
-	vector<ChaPair> out;
-	ChaPair temp;
-	for (size_t i = 0; i < x.length(); i++)
-	{
-		temp.x = x[i];
-		temp.mapsTo = mapsto[i];
-		out.push_back(temp);
-	}
-	return out;
-}
 
-//finds if 2 full or partial keys will not produce the same result
-bool key_conflict(string key1, string key2){
-	for (size_t i = 0; i < key1.length(); i++)
-	{
-		if (key1[i] != key2[i] && (key1[i] != '*' && key2[i] != '*')){
-			//if the ith char of key1 is not the same as the ith char of key2
-			//and the ith char of either is not a '*', then the keys are in conflict.
-			return true;
-		}
-	}
-	return false;
-}
-
-//returns a single key from a vector of incomplete keys
-//which have been determined not to conflict.
-string merge_keys(strvec keys){
-	string out = "**************************";	//26 '*'s
-	for (size_t i = 0; i < keys.size(); i++)
-	{
-		for (size_t j = 0; j < keys[i].length(); j++)
-		{
-			if (keys[i][j] != '*'){ out[j] = keys[i][j]; }
-		}
-	}
-	return out;
-}
-
-string char_vector_to_string(vector<char> in){
-	string s(in.begin(), in.end());
-	return s;
-}
-
-//void depth_first_keygen(const strvec& encrMsg, const str_2D& grid){
-//	strvec keys;
-//	string root, msg, keycheck;
-//	vector<int> map; //indecies of of the rows in each column where keys do not conflict
-//	for (size_t i = 0; i < grid[0].size(); i++)//iterate through the rows in the first column
-//	{
-//		msg = encrMsg[i];
-//		root = grid[0][i];
-//		keycheck = generate_key(make_chapair_vec(msg, root));
-//		for (size_t j = 1; j < grid.size(); j++)//iterate through the columns (but not the 0th one)
-//		{
-//			for (size_t k = 0; k < grid[j].size(); k++)//iterate through the rows in column j
-//			{
-//				if ()
-//			}
-//		}
-//	}
-//}
 
 //pass the full encrypted message to this function.
 //generates a list of possible (incomplete) keys
@@ -213,48 +146,23 @@ strvec solve_by_pattern(string message){
 		tree[i].assign(begin(keys[i]), end(keys[i]));
 	}
 
-	/*
-	//check if any keys conflict with each other. if so, remove them.(all keys must be checked)
-	list<string>::iterator iter_i;
-	list<string>::iterator iter_j;
-	string comperand, comparitor;
-	bool conflictFound = false;
-	for (size_t i = 0; i < keys.size(); i++)
-	{
-	iter_i = keys[i].begin();
-	while (iter_i != keys[i].end()){
-	comperand = *iter_i;
-	for (size_t j = 0; j < keys.size(); j++){
-	if (j == i){ continue; }//don't check against keys in the same column.
-	iter_j = keys[j].begin();
-	while (iter_j != keys[j].end()){
-	comparitor = *iter_j;
-	conflictFound = key_conflict(comparitor, comperand);
-	if (conflictFound){
-	iter_j = keys[j].erase(iter_j);
+	//trim the tree
+	int i = 0;
+	while (i < tree.size()){
+		if (tree[i].size() == 0 || tree[i].size() > 250){
+			tree.erase(tree.begin() + i);
+			i = 0;
+		}
+		else{
+			i++;
+		}
 	}
-	else{
-	++iter_j;
-	}
-	}
-	}
-	//dont forget to remove the first key if a conflict was found
-	if (conflictFound){
-	iter_i = keys[i].erase(iter_i);
-	}
-	else{
-	++iter_i;
-	}
-	}
-	}
-	cout << "Keys culled." << endl;
-	*/
 
-	strvec out;
+	Graph g(tree);
 
-	for (size_t i = 0; i < keys.size(); i++){
-		out.insert(end(out), begin(keys[i]), end(keys[i]));
-	}
+	g.dft(0, 0);
+
+	strvec out = g.getKeyList();
 
 	return out;
 }
@@ -275,21 +183,16 @@ void load_word_list(){
 
 int main(){
 	load_word_list();
-	string s = "AAAAAAAAAAAAAAAAAAAAAAAAAABBBBBBBBBBBBBBBBBBBBBBBBBCCCCCCCCCCCCCCCCCCCCCCCCDDDDDDDDDDDDDDDDDDDDDDDEEEEEEEEEEEEEEEEEEEEEEFFFFFFFFFFFFFFFFFFFFFGGGGGGGGGGGGGGGGGGGGHHHHHHHHHHHHHHHHHHHIIIIIIIIIIIIIIIIIIJJJJJJJJJJJJJJJJJKKKKKKKKKKKKKKKKLLLLLLLLLLLLLLLMMMMMMMMMMMMMMNNNNNNNNNNNNNOOOOOOOOOOOOPPPPPPPPPPPQQQQQQQQQQRRRRRRRRRSSSSSSSSTTTTTTTUUUUUUVVVVVWWWWXXXYYZ";
-	remove_dpw(s);
-	//cout << s << endl;
-	//shuffle(s);
-	//cout << s << endl;
-	//find_anagrams("");
-	/*int num = 0;
-	for (int i = 0; i < Handler::LENGTH_OF_LIST; i++){
-		if (is_candidate(wordlist[i], s)){
-			num++;
-		}
-	}*/
-
-	print_histogram(s, 6);
-
+	string s = "A disadvantage of this method of derangement is that the last letters of the alphabet (which are mostly low frequency) tend to stay at the end";
+	remove_dp(s);
+	cout << s << endl;
+	encode(s, "QWERTYUIOPASDFGHJKLZXCVBNM");
+	cout << s << endl;
+	//print_list(solve_by_pattern(s));
+	//string str = "ROLQRCQFZQUT";
+	//decode(str, "Q**RT*U*O****F****LZ*C****");
+	//cout << "\n\n" << str << endl;
+	cout << "DONE. ";
 	char c;
 	cin >> c;
 	return 0;

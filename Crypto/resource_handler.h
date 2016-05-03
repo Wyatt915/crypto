@@ -23,6 +23,7 @@ using namespace std;
 
 extern vector<string> wordlist;
 extern vector<string> patt;
+extern const unsigned int LENGTH_OF_LIST;
 
 //----------[End of Global Variable Declaration]-------------------------------
 

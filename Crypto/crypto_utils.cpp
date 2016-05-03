@@ -1,6 +1,8 @@
 #include "crypto_utils.h"
 #include <cstdlib>
 #include <ctime>
+#include <vector>
+#include <iostream>
 
 void capitalize(string& in){
 	for (size_t i = 0; i < in.length(); i++){
@@ -56,4 +58,15 @@ void shuffle(string& in){
 		in[i] = in[r];
 		in[r] = temp;
 	}
+}
+
+void print_list(const vector<string>& in){
+	for (string elem : in){
+		cout << elem << ' ';
+	}
+}
+
+string char_vector_to_string(vector<char> in){
+	string s(in.begin(), in.end());
+	return s;
 }
