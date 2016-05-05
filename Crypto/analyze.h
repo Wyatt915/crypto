@@ -6,33 +6,33 @@
 #include <list>
 #include "crypto_utils.h"
 
-string char_pattern(string in);
+std::string char_pattern(std::string in);
 
 struct ChaPair{
 	char x, mapsTo;
 };
 
 //[in] must be UPPERCASE
-array<int, 26> countchars(string in);
-void print_histogram(string in, int resolution);
-string char_vector_to_string(vector<char>);
-bool key_conflict(string, string);
-string merge_keys(string, string);
-string merge_keys(vector<string>);
-vector<ChaPair> make_chapair_vec(string, string);
-string generate_key(vector<ChaPair>);
+std::array<int, 26> countchars(std::string in);
+void print_histogram(std::string in, int resolution);
+std::string char_vector_to_string(std::vector<char>);
+bool key_conflict(std::string, std::string);
+std::string merge_keys(std::string, std::string);
+std::string merge_keys(std::vector<std::string>);
+std::vector<ChaPair> make_chapair_vec(std::string, std::string);
+std::string generate_key(std::vector<ChaPair>);
 
 class Graph{
 public:
-	Graph(const std::vector<std::vector<string> >&);
-	list<string> getKeyList();
-	vector<string> getKeyVec();
+	Graph(const std::vector<std::vector<std::string> >&);
+	std::list<std::string> getKeylist();
+	std::vector<std::string> getKeyVec();
 private:
 	void dft(unsigned int, unsigned int);
-	vector<string> keysFromPath;
+	std::vector<std::string> keysFromPath;
 	std::vector<int> path;
-	vector<vector<int> > paths;
-	std::vector<std::vector<string> > verts;
-	string key;	//cumulative key being generated
-	std::list<string> keylist;
+	std::vector<std::vector<int> > paths;
+	std::vector<std::vector<std::string> > verts;
+	std::string key;	//cumulative key being generated
+	std::list<std::string> keylist;
 };

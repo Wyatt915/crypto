@@ -1,8 +1,8 @@
 #include "resource_handler.h"
 
-vector<string> temp;
-vector<string> wordlist = temp;	//"definition"
-vector<string> patt = temp;
+std::vector<std::string> temp;
+std::vector<std::string> wordlist = temp;	//"definition"
+std::vector<std::string> patt = temp;
 
 struct simple_error{
 public:
@@ -17,7 +17,7 @@ simple_error error(std::string s){
 
 Handler::Handler()
 {
-	data = new string[LENGTH_OF_LIST];
+	data = new std::string[LENGTH_OF_list];
 	getResource();
 }
 
@@ -46,7 +46,7 @@ void Handler::extractResource()
 void Handler::getResource(){
 	extractResource();
 	int j = 0;
-	for (int i = 0; i < LENGTH_OF_LIST; i++, j++){
+	for (int i = 0; i < LENGTH_OF_list; i++, j++){
 		while (res_data[j] != '\n'){
 			data[i] += res_data[j];
 			j++;
@@ -55,21 +55,21 @@ void Handler::getResource(){
 	}
 }
 
-string* Handler::getData(){
+std::string* Handler::getData(){
 	return data;
 }
 
-string* open_resource(){
+std::string* open_resource(){
 	Handler h;
 	return h.getData();
 }
 
 void init_words(){
-	vector<string> words;
-	words.resize(Handler::LENGTH_OF_LIST);
-	patt.resize(Handler::LENGTH_OF_LIST);
-	string * temp = open_resource();
-	copy(temp, temp + Handler::LENGTH_OF_LIST, words.begin());
+	std::vector<std::string> words;
+	words.resize(Handler::LENGTH_OF_list);
+	patt.resize(Handler::LENGTH_OF_list);
+	std::string * temp = open_resource();
+	copy(temp, temp + Handler::LENGTH_OF_list, words.begin());
 	delete[] temp;
 	wordlist = words;
 	//return words;

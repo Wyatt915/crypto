@@ -2,14 +2,14 @@
 #include <string>
 #include <vector>
 
-using namespace std;
 
-void capitalize(string& in);
-void remove_p(string& in);
-void remove_dp(string& in);
-void remove_dpw(string& in);//remove digits, punctuation, and spaces
-void shuffle(string& in);
-void print_list(const vector<string>& in);
-void print_list(const vector<string>& in, char);
-void print_list(const vector<string>& in, string);
-string char_vector_to_string(vector<char>);
+
+void capitalize(std::string&);
+std::string char_vector_to_string(std::vector<char>);
+void print_list(const std::vector<std::string>&);
+void print_list(const std::vector<std::string>&, char);
+void print_list(const std::vector<std::string>&, std::string);
+void shuffle(std::string&);
+void remove_p(std::string&);
+void remove_dp(std::string&);
+void remove_dpw(std::string&);//remove digits, punctuation, and spaces

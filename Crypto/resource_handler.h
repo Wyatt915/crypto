@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-using namespace std;
+
 
 //----------[Project Global Variables]-----------------------------------------
 
@@ -18,12 +18,12 @@ using namespace std;
 //#define EXTERN extern
 //#endif
 //
-//EXTERN vector<string> wordlist;
-//EXTERN vector<string> patt;
+//EXTERN std::vector<std::string> wordlist;
+//EXTERN std::vector<std::string> patt;
 
-extern vector<string> wordlist;
-extern vector<string> patt;
-extern const unsigned int LENGTH_OF_LIST;
+extern std::vector<std::string> wordlist;
+extern std::vector<std::string> patt;
+extern const unsigned int LENGTH_OF_list;
 
 //----------[End of Global Variable Declaration]-------------------------------
 
@@ -33,12 +33,12 @@ public:
 	Handler();
 	~Handler();
 	void getResource();
-	string* getData();
-	static const size_t LENGTH_OF_LIST = 149544;
+	std::string* getData();
+	static const size_t LENGTH_OF_list = 149544;
 private:
 	void extractResource();
 	char *      res_data;
-	string* data;
+	std::string* data;
 };
 
 void init_words();

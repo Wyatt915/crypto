@@ -8,8 +8,8 @@
 *  Counts the number of instances of each character from A to Z.
 *  @param in must be UPPERCASE
 */
-array<int, 26> countchars(string in){
-	array<int, 26> out;
+std::array<int, 26> countchars(std::string in){
+	std::array<int, 26> out;
 
 	for (unsigned int i = 0; i < 26; i++){ out[i] = 0; }
 
@@ -20,12 +20,12 @@ array<int, 26> countchars(string in){
 }
 
 /**
-*  Finds the frequency of occurance of each letter in a given string.
+*  Finds the frequency of occurance of each letter in a given std::string.
 */
-array<float, 26> frequency(string in){
-	array<int, 26> count = countchars(in);
+std::array<float, 26> frequency(std::string in){
+	std::array<int, 26> count = countchars(in);
 	int sum = accumulate(count.begin(), count.end(), 0);
-	array<float, 26> freq;
+	std::array<float, 26> freq;
 	for (int i = 0; i < 26; i++){
 		freq[i] = (float)count[i] / (float)sum;
 	}
@@ -34,34 +34,34 @@ array<float, 26> frequency(string in){
 
 /**
 *  Prints a histogram of letter frequency.
-*  @param in String to be analyzed.
+*  @param in std::string to be analyzed.
 *  @param resolution the height of the graph, in lines.
 */
-void print_histogram(string in, int resolution){
-	array<float, 26> freq = frequency(in);
+void print_histogram(std::string in, int resolution){
+	std::array<float, 26> freq = frequency(in);
 	float max_val = *max_element(freq.begin(), freq.end());
 
 	for (int i = 0, j = resolution; i < resolution; i++, j--){
-		cout << ' ';
+		std::cout << ' ';
 		for (int k = 0; k < 26; k++){
 			if ((freq[k] * (resolution / max_val)) >= j){
-				cout << "# ";
+				std::cout << "# ";
 			}
 			else{
-				cout << "  ";
+				std::cout << "  ";
 			}
 		}
 		//create labels for the vertical axis.
-		cout << "| ";
+		std::cout << "| ";
 		printf("%.3f", 100 * (max_val - (((float)i / resolution)*max_val)));
-		cout << "%\n";
+		std::cout << "%\n";
 	}
 
-	cout << ' ';
+	std::cout << ' ';
 	for (int i = 0; i < 26; i++){
-		cout << (char)('A' + i) << ' ';
+		std::cout << (char)('A' + i) << ' ';
 	}
-	cout << '\n';
+	std::cout << '\n';
 }
 
 
@@ -76,11 +76,11 @@ void print_histogram(string in, int resolution){
 *
 *  The reason for using the letters A, B, C...Z (in order) to represent other letters
 *  is because if a word goes through a substitution cipher, its resultant pattern will
-*  not change. For instance the pattern of "AGRICULTURALISTS" is "A*BC*DEFDBAECGFG". If
-*  If AGRICULTURALISTS is passed through a substitution cipher, it will come out as something
+*  not change. For instance the pattern of "AGRICULTURAstd::listS" is "A*BC*DEFDBAECGFG". If
+*  If AGRICULTURAstd::listS is passed through a substitution cipher, it will come out as something
 *  like QUKOEXSZXKQSOLZL, but the pattern will remain as "A*BC*DEFDBAECGFG".
 */
-string char_pattern(string in){
+std::string char_pattern(std::string in){
 	capitalize(in);
 	const int l = in.length();
 	char *pattern = new char[l];
@@ -108,15 +108,15 @@ string char_pattern(string in){
 		match_found = false;
 	}
 
-	string out(pattern, l);
+	std::string out(pattern, l);
 	delete[] pattern;
 	delete[] completed;
 
 	return out;
 }
 
-string generate_key(vector<ChaPair> map){
-	string out = string(26, '*');
+std::string generate_key(std::vector<ChaPair> map){
+	std::string out = std::string(26, '*');
 	for (size_t i = 0; i < map.size(); i++)
 	{
 		out[map[i].x - 'A'] = map[i].mapsTo;
@@ -125,8 +125,8 @@ string generate_key(vector<ChaPair> map){
 }
 
 //x and mapsto will always be the same length
-vector<ChaPair> make_chapair_vec(string x, string mapsto){
-	vector<ChaPair> out;
+std::vector<ChaPair> make_chapair_vec(std::string x, std::string mapsto){
+	std::vector<ChaPair> out;
 	ChaPair temp;
 	for (size_t i = 0; i < x.length(); i++)
 	{
@@ -137,10 +137,10 @@ vector<ChaPair> make_chapair_vec(string x, string mapsto){
 	return out;
 }
 
-//returns a single key from a vector of incomplete keys
+//returns a single key from a std::vector of incomplete keys
 //which have been determined not to conflict.
-string merge_keys(vector<string> keys){
-	string out = string(26, '*');	//26 '*'s
+std::string merge_keys(std::vector<std::string> keys){
+	std::string out = std::string(26, '*');	//26 '*'s
 	for (size_t i = 0; i < keys.size(); i++)
 	{
 		for (size_t j = 0; j < keys[i].length(); j++)
@@ -153,9 +153,9 @@ string merge_keys(vector<string> keys){
 	return out;
 }
 
-string merge_keys(list<string> l){
-	vector<string> keys{ std::make_move_iterator(std::begin(l)), std::make_move_iterator(std::end(l)) };
-	string out = string(26, '*');	//26 '*'s
+std::string merge_keys(std::list<std::string> l){
+	std::vector<std::string> keys{ make_move_iterator(begin(l)), make_move_iterator(end(l)) };
+	std::string out = std::string(26, '*');	//26 '*'s
 	for (size_t i = 0; i < keys.size(); i++)
 	{
 		for (size_t j = 0; j < keys[i].length(); j++)
@@ -168,8 +168,8 @@ string merge_keys(list<string> l){
 	return out;
 }
 
-string merge_keys(string key1, string key2){
-	string out = string(26, '*');	//26 '*'s
+std::string merge_keys(std::string key1, std::string key2){
+	std::string out = std::string(26, '*');	//26 '*'s
 	for (int i = 0; i < 26; i++){
 		if (key1[i] != '*'){
 			out[i] = key1[i];
@@ -184,7 +184,7 @@ string merge_keys(string key1, string key2){
 }
 
 //finds if 2 full or partial keys will not produce the same result
-bool key_conflict(string key1, string key2){
+bool key_conflict(std::string key1, std::string key2){
 	for (size_t i = 0; i < key1.length(); i++)
 	{
 		if (key1[i] != key2[i] && (key1[i] != '*' && key2[i] != '*')){
@@ -194,7 +194,7 @@ bool key_conflict(string key1, string key2){
 		}
 
 	}
-	string t1, t2;
+	std::string t1, t2;
 	t1 = key1;
 	t2 = key2;
 	t1 = merge_keys(t1, t2);
@@ -209,10 +209,10 @@ bool key_conflict(string key1, string key2){
 	return false;
 }
 
-bool key_conflict(list<string> keys){
-	string key1, key2;
+bool key_conflict(std::list<std::string> keys){
+	std::string key1, key2;
 	key1 = *keys.begin();
-	list<string>::iterator iter = keys.begin();
+	std::list<std::string>::iterator iter = keys.begin();
 	++iter;
 	while (iter != keys.end()){
 		key2 = *iter;
@@ -225,7 +225,7 @@ bool key_conflict(list<string> keys){
 			}
 
 		}
-		string t1, t2;
+		std::string t1, t2;
 		t1 = key1;
 		t2 = key2;
 		t1 = merge_keys(t1, t2);
@@ -244,12 +244,12 @@ bool key_conflict(list<string> keys){
 
 //----------------[Graph Junk]---------------
 
-Graph::Graph(const vector<vector<string> >& data){
+Graph::Graph(const std::vector<std::vector<std::string> >& data){
 	verts = data;
-	key = string(26, '*');
+	key = std::string(26, '*');
 }
 
-list<string> Graph::getKeyList(){
+std::list<std::string> Graph::getKeylist(){
 	dft(0, 0);
 	keylist.unique();
 	if (!key_conflict(keylist)){
@@ -258,9 +258,9 @@ list<string> Graph::getKeyList(){
 	return keylist;
 }
 
-vector<string> Graph::getKeyVec(){
-	list<string> l = getKeyList();
-	vector<string> v{ std::make_move_iterator(std::begin(l)), std::make_move_iterator(std::end(l)) };
+std::vector<std::string> Graph::getKeyVec(){
+	std::list<std::string> l = getKeylist();
+	std::vector<std::string> v{ make_move_iterator(begin(l)), make_move_iterator(end(l)) };
 	return v;
 }
 
@@ -298,7 +298,7 @@ void Graph::dft(unsigned int col, unsigned int row){
 				dft(col + 1, 0);			//if the next column exists, go to it.
 			}
 			else {							//if the next column does not exist
-				paths.push_back(path);	//we have a completed path. add it to the list.
+				paths.push_back(path);	//we have a completed path. add it to the std::list.
 				keylist.push_back(keysFromPath.back());
 				path.pop_back();			//remove the last index from the path
 				keysFromPath.pop_back();
@@ -312,7 +312,7 @@ void Graph::dft(unsigned int col, unsigned int row){
 				}
 			}
 		}
-		//if the current vert does not qualify to our rule
+		//if the current vert does conflict
 		else{
 			//If we are not in the last row of the current column
 			if (row < verts[col].size()) {

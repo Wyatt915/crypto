@@ -4,9 +4,9 @@
 #include <iostream>
 
 
-using namespace std;
 
-typedef vector<string> strvec;
 
-bool is_candidate(string test, string anagram);
-void find_anagrams(string i);
+typedef std::vector<std::string> strvec;
+
+bool is_candidate(std::string test, std::string anagram);
+void find_anagrams(std::string i);

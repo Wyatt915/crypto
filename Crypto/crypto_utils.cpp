@@ -4,7 +4,7 @@
 #include <vector>
 #include <iostream>
 
-void capitalize(string& in){
+void capitalize(std::string& in){
 	for (size_t i = 0; i < in.length(); i++){
 		if (in[i] >= 'a' && in[i] <= 'z'){
 			in[i] = (in[i] - 'a') + 'A';	//to upper case
@@ -13,9 +13,9 @@ void capitalize(string& in){
 }
 
 //remove punctuation
-void remove_p(string& in){
+void remove_p(std::string& in){
 	capitalize(in);
-	string copy;
+	std::string copy;
 	for (unsigned int i = 0; i < in.length(); i++){
 		if ((in[i] >= 'A' && in[i] <= 'Z') || (in[i] >= '0' && in[i] <= '9') || in[i] == ' '){
 			copy.push_back(in[i]);
@@ -25,9 +25,9 @@ void remove_p(string& in){
 }
 
 //remove digits and punctuation
-void remove_dp(string& in){
+void remove_dp(std::string& in){
 	capitalize(in);
-	string copy;
+	std::string copy;
 	for (unsigned int i = 0; i < in.length(); i++){
 		if ((in[i] >= 'A' && in[i] <= 'Z') || in[i] == ' '){
 			copy.push_back(in[i]);
@@ -37,9 +37,9 @@ void remove_dp(string& in){
 }
 
 //remove digits, punctuation, and spaces
-void remove_dpw(string& in){
+void remove_dpw(std::string& in){
 	capitalize(in);
-	string copy;
+	std::string copy;
 	for (unsigned int i = 0; i < in.length(); i++){
 		if ((in[i] >= 'A' && in[i] <= 'Z')){
 			copy.push_back(in[i]);
@@ -48,7 +48,7 @@ void remove_dpw(string& in){
 	in = copy;
 }
 
-void shuffle(string& in){
+void shuffle(std::string& in){
 	srand(time(0));
 	int r = 0;
 	char temp;
@@ -60,24 +60,24 @@ void shuffle(string& in){
 	}
 }
 
-void print_list(const vector<string>& in){
-	for (string elem : in){
-		cout << elem << ' ';
+void print_list(const std::vector<std::string>& in){
+	for (std::string elem : in){
+		std::cout << elem << ' ';
 	}
 }
 
-void print_list(const vector<string>& in, char delim){
-	for (string elem : in){
-		cout << elem << delim;
+void print_list(const std::vector<std::string>& in, char delim){
+	for (std::string elem : in){
+		std::cout << elem << delim;
 	}
 }
-void print_list(const vector<string>& in, string delim){
-	for (string elem : in){
-		cout << elem << delim;
+void print_list(const std::vector<std::string>& in, std::string delim){
+	for (std::string elem : in){
+		std::cout << elem << delim;
 	}
 }
 
-string char_vector_to_string(vector<char> in){
-	string s(in.begin(), in.end());
+std::string char_vector_to_string(std::vector<char> in){
+	std::string s(in.begin(), in.end());
 	return s;
 }
