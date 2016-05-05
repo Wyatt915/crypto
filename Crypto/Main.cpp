@@ -27,7 +27,7 @@ struct IntPair{
 void invert(std::string& key){
 	std::string inv(ALPHA, '*');
 	for (int i = 0; i < ALPHA; i++){
-		if (key[i] != '*'){ inv[key[i] - 'A'] = i + 'A'; }		
+		if (key[i] != '*'){ inv[key[i] - 'A'] = i + 'A'; }
 	}
 	key = inv;
 }
@@ -108,6 +108,44 @@ strvec match_by_pattern(std::string in){
 	return out;
 }
 
+//if there are more than 16 words, only keep the 16 longest.
+void optimize(strvec& in){
+	if (in.size() > 16){
+		strvec temp;
+		int maxLen = 0;
+		int maxLenIdx = 0; //where is the longest word
+		for (size_t i = 0; i < 16; i++)
+		{
+			for (size_t j = 0; j < in.size(); j++){
+				if (in[j].length() > maxLen){
+					maxLen = in[j].length();
+					maxLenIdx = j;
+				}
+			}
+			temp.push_back(in[maxLenIdx]);
+			in.erase(in.begin() + maxLenIdx);
+			maxLen = 0;
+			maxLenIdx = 0;
+		}
+		in = temp;
+	}
+}
+
+//minimize the search space of the graph
+void optimize(str_2D& in){
+	size_t pos = 0;
+	while (pos < in.size()){
+		//if there are no direct pattern matches, or there are too many to be practical, remove those columns.
+		//also if the length of the word is too short.  longer words provide more info.
+		if (in[pos].size() == 0 || in[pos].size() > 250){
+			in.erase(in.begin() + pos);
+			pos = 0;
+		}
+		else{ pos++; }
+	}
+}
+
+
 //pass the full encrypted message to this function.
 //generates a list of possible (incomplete) keys
 strvec solve_by_pattern(std::string message){
@@ -118,8 +156,14 @@ strvec solve_by_pattern(std::string message){
 		//each word is its own array element.
 		messageParsed.push_back(temp);
 	}
+
+	optimize(messageParsed);
+	std::cout << "\n\n";
+	print_list(messageParsed, ' ');
+	std::cout << "\n\n";
+
 	unsigned long numkeys = 0;//just for debugging.
-	//for each word, make a std::list of all words of the same pattern.
+	//for each word, make a list of all words of the same pattern.
 	str_2D matched;
 	for (size_t i = 0; i < messageParsed.size(); i++)
 	{
@@ -146,26 +190,16 @@ strvec solve_by_pattern(std::string message){
 
 	std::cout << numkeys << "Keys Found...Making graph...";
 
-	str_2D tree;
-	tree.resize(keys.size());
-	for (size_t i = 0; i < tree.size(); i++)
+	str_2D ragged;
+	ragged.resize(keys.size());
+	for (size_t i = 0; i < ragged.size(); i++)
 	{
-		tree[i].assign(begin(keys[i]), end(keys[i]));
+		ragged[i].assign(begin(keys[i]), end(keys[i]));
 	}
 
-	//trim the tree
-	size_t i = 0;
-	while (i < tree.size()){
-		if (tree[i].size() == 0 || tree[i].size() > 200){
-			tree.erase(tree.begin() + i);
-			i = 0;
-		}
-		else{
-			i++;
-		}
-	}
+	optimize(ragged);
 
-	Graph g(tree);
+	Graph g(ragged);
 	std::cout << "Graph created...searching...";
 	strvec out = g.getKeyVec();
 	std::cout << "DONE.\n\n";
@@ -185,11 +219,11 @@ void load_word_list(){
 	init_words();
 	patt = empatternate(wordlist);
 }
-void test(std::string in){	
+void test(std::string in){
 	std::string key = "QWERTYUIOPASDFGHJKLZXCVBNM";
 	remove_dp(in);	//sanitize
-	std::cout << in << '\n';
-	encode(in, key);
+	//std::cout << in << '\n';
+	//encode(in, key);
 	std::cout << in << '\n';
 	strvec keys = solve_by_pattern(in);
 	strvec messages;
@@ -204,7 +238,9 @@ void test(std::string in){
 int main(){
 	std::cout << "Loading wordlist...";
 	load_word_list();
-	std::string s = "If Only the woodpecker cried the bark on the tree were as soft as the skies";
+	std::cout << "DONE.\n\n";
+
+	std::string s = "BMBU SUWKMNMOUN LXS VXBOUBOUH TMYMBR DUQTOD UBXKRD OX FQZU GXSZ Q ITUQNKSU GUQTOD UBXKRD OX NKIIXSO EXKS BUUHN NOSUBROD OX JQOOTU GMOD HMLLMVKTOMUN QBH XYUSVXFU ODUF RSQVU UBXKRD OX VXBLUNN EXKS NMBN QBH LXSNQZU ODUF IQOMUBVU UBXKRD OX OXMT KBOMT NXFU RXXH MN QVVXFITMNDUH VDQSMOE UBXKRD OX NUU NXFU RXXH MB EXKS BUMRDJXKS TXYU UBXKRD OX FXYU EXK OX JU KNULKT QBH DUTILKT OX XODUSN LQMOD UBXKRD OX FQZU SUQT ODU ODMBRN XL RXH DXIU UBXKRD OX SUFXYU QTT QBAMXKN LUQSN VXBVUSBMBR ODU LKOKSU";
 
 	test(s);
 
