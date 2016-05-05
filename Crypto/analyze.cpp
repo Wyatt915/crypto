@@ -53,7 +53,7 @@ void print_histogram(string in, int resolution){
 		}
 		//create labels for the vertical axis.
 		cout << "| ";
-		printf("%.3f", 100*(max_val - (((float)i / resolution)*max_val)));
+		printf("%.3f", 100 * (max_val - (((float)i / resolution)*max_val)));
 		cout << "%\n";
 	}
 
@@ -68,7 +68,7 @@ void print_histogram(string in, int resolution){
 /**
 *  Produces the character pattern of a given word.
 *  For example, the input "ENCRYPTS" would give the output "********" because
-*  each character in the word is unique, i.e. none of the letters repeat. In contrast, 
+*  each character in the word is unique, i.e. none of the letters repeat. In contrast,
 *  The word "QUANTITATIVE" results in a pattern of "**A*BCBABC**" because the letter A
 *  is the first letter that gets repeated, and it occurs in the 3rd and 8th positions.
 *  Next, N is repeated, and since it is the second unique letter that is repeated, it is
@@ -153,6 +153,21 @@ string merge_keys(vector<string> keys){
 	return out;
 }
 
+string merge_keys(list<string> l){
+	vector<string> keys{ std::make_move_iterator(std::begin(l)), std::make_move_iterator(std::end(l)) };
+	string out = string(26, '*');	//26 '*'s
+	for (size_t i = 0; i < keys.size(); i++)
+	{
+		for (size_t j = 0; j < keys[i].length(); j++)
+		{
+			if (keys[i][j] != '*'){
+				out[j] = keys[i][j];
+			}
+		}
+	}
+	return out;
+}
+
 string merge_keys(string key1, string key2){
 	string out = string(26, '*');	//26 '*'s
 	for (int i = 0; i < 26; i++){
@@ -194,6 +209,39 @@ bool key_conflict(string key1, string key2){
 	return false;
 }
 
+bool key_conflict(list<string> keys){
+	string key1, key2;
+	key1 = *keys.begin();
+	list<string>::iterator iter = keys.begin();
+	++iter;
+	while (iter != keys.end()){
+		key2 = *iter;
+		for (size_t i = 0; i < key1.length(); i++)
+		{
+			if (key1[i] != key2[i] && (key1[i] != '*' && key2[i] != '*')){
+				//if the ith char of key1 is not the same as the ith char of key2
+				//and the ith char of either is not a '*', then the keys are in conflict.
+				return true;
+			}
+
+		}
+		string t1, t2;
+		t1 = key1;
+		t2 = key2;
+		t1 = merge_keys(t1, t2);
+		remove_dpw(t1);
+		bool accounted[26] = { 0 };
+		for (int i = 0; i < t1.length(); i++){
+			//if the char at i has already been accounted for then
+			//it is a duplicate and therefore the keys conflict.
+			if (accounted[t1[i] - 'A']){ return true; }
+			else { accounted[t1[i] - 'A'] = true; }
+		}
+		key1 = merge_keys(key1, key2);
+	}
+	return false;
+}
+
 //----------------[Graph Junk]---------------
 
 Graph::Graph(const vector<vector<string> >& data){
@@ -201,8 +249,19 @@ Graph::Graph(const vector<vector<string> >& data){
 	key = string(26, '*');
 }
 
-vector<string> Graph::getKeyList(){
+list<string> Graph::getKeyList(){
+	dft(0, 0);
+	keylist.unique();
+	if (!key_conflict(keylist)){
+		merge_keys(keylist);
+	}
 	return keylist;
+}
+
+vector<string> Graph::getKeyVec(){
+	list<string> l = getKeyList();
+	vector<string> v{ std::make_move_iterator(std::begin(l)), std::make_move_iterator(std::end(l)) };
+	return v;
 }
 
 /**
@@ -217,6 +276,7 @@ void Graph::dft(unsigned int col, unsigned int row){
 	if (row >= verts[col].size()){
 		int backOfPath = path.back();
 		path.pop_back();	//remove so it can be replaced.
+		keysFromPath.pop_back();
 		dft(col - 1, backOfPath + 1);	//move to the previous column and down one row
 		return;
 	}
@@ -230,16 +290,14 @@ void Graph::dft(unsigned int col, unsigned int row){
 	}
 	else {
 		//if the current vert does not conflict with those before it
-		if (!key_conflict(verts[col][row], key)){
+		if (!key_conflict(verts[col][row], keysFromPath.back())){
 			path.push_back(row);
 			key = merge_keys(keysFromPath.back(), verts[col][row]);
 			keysFromPath.push_back(key);
 			if (col < verts.size() - 1){
 				dft(col + 1, 0);			//if the next column exists, go to it.
-				cout << '.';
 			}
 			else {							//if the next column does not exist
-				cout << "\n\nSUCCESS\n\n";
 				paths.push_back(path);	//we have a completed path. add it to the list.
 				keylist.push_back(keysFromPath.back());
 				path.pop_back();			//remove the last index from the path

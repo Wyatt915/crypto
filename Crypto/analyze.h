@@ -3,6 +3,7 @@
 #include <numeric>
 #include <stdio.h>
 #include <string>
+#include <list>
 #include "crypto_utils.h"
 
 string char_pattern(string in);
@@ -24,13 +25,14 @@ string generate_key(vector<ChaPair>);
 class Graph{
 public:
 	Graph(const std::vector<std::vector<string> >&);
-	void dft(unsigned int, unsigned int);
-	vector<string> getKeyList();
+	list<string> getKeyList();
+	vector<string> getKeyVec();
 private:
+	void dft(unsigned int, unsigned int);
 	vector<string> keysFromPath;
 	std::vector<int> path;
 	vector<vector<int> > paths;
 	std::vector<std::vector<string> > verts;
 	string key;	//cumulative key being generated
-	std::vector<string> keylist;
+	std::list<string> keylist;
 };

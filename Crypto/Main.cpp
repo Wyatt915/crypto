@@ -160,9 +160,7 @@ strvec solve_by_pattern(string message){
 
 	Graph g(tree);
 
-	g.dft(0, 0);
-
-	strvec out = g.getKeyList();
+	strvec out = g.getKeyVec();
 
 	return out;
 }
@@ -188,7 +186,9 @@ int main(){
 	cout << s << endl;
 	encode(s, "QWERTYUIOPASDFGHJKLZXCVBNM");
 	cout << s << endl;
-	//print_list(solve_by_pattern(s));
+	vector<string> keys = solve_by_pattern(s);
+	decode(s, keys[0]);
+	cout << s;
 	//string str = "ROLQRCQFZQUT";
 	//decode(str, "Q**RT*U*O****F****LZ*C****");
 	//cout << "\n\n" << str << endl;

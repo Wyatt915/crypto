@@ -66,6 +66,17 @@ void print_list(const vector<string>& in){
 	}
 }
 
+void print_list(const vector<string>& in, char delim){
+	for (string elem : in){
+		cout << elem << delim;
+	}
+}
+void print_list(const vector<string>& in, string delim){
+	for (string elem : in){
+		cout << elem << delim;
+	}
+}
+
 string char_vector_to_string(vector<char> in){
 	string s(in.begin(), in.end());
 	return s;
