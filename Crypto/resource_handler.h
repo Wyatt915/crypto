@@ -34,7 +34,7 @@ public:
 	~Handler();
 	void getResource();
 	std::string* getData();
-	static const size_t LENGTH_OF_list = 149544;
+	static const size_t LENGTH_OF_list = 143182;
 private:
 	void extractResource();
 	char *      res_data;
