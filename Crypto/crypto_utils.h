@@ -13,3 +13,4 @@ void shuffle(std::string&);
 void remove_p(std::string&);
 void remove_dp(std::string&);
 void remove_dpw(std::string&);//remove digits, punctuation, and spaces
+std::vector<std::string> permute(std::string);

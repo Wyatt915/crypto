@@ -247,6 +247,7 @@ bool key_conflict(std::list<std::string> keys){
 Graph::Graph(const std::vector<std::vector<std::string> >& data){
 	verts = data;
 	key = std::string(26, '*');
+	numcalls = 0;
 }
 
 std::list<std::string> Graph::getKeylist(){
@@ -268,6 +269,7 @@ std::vector<std::string> Graph::getKeyVec(){
 *  Depth-first traversal
 */
 void Graph::dft(unsigned int col, unsigned int row){
+	numcalls++;
 	//If there are no previous columns and we have gone past the end of the current column
 	if (col == 0 && row >= verts[col].size()){
 		return;

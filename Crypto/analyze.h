@@ -27,6 +27,7 @@ public:
 	Graph(const std::vector<std::vector<std::string> >&);
 	std::list<std::string> getKeylist();
 	std::vector<std::string> getKeyVec();
+	int numcalls;
 private:
 	void dft(unsigned int, unsigned int);
 	std::vector<std::string> keysFromPath;

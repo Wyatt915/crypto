@@ -60,15 +60,19 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>S:\Programs\C++\Boost\boost_1_60_0;S:\Programs\C++\Boost\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <StackReserveSize>500000000</StackReserveSize>
-      <StackCommitSize>500000000</StackCommitSize>
-      <HeapReserveSize>500000000</HeapReserveSize>
-      <HeapCommitSize>500000000</HeapCommitSize>
+      <StackReserveSize>50000000</StackReserveSize>
+      <StackCommitSize>
+      </StackCommitSize>
+      <HeapReserveSize>50000000</HeapReserveSize>
+      <HeapCommitSize>
+      </HeapCommitSize>
+      <AdditionalLibraryDirectories>S:\Programs\C++\Boost\boost_1_60_0\stage\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

@@ -1,5 +1,6 @@
 #define GVARS	//for the wordlist in resource_handler.h
 
+
 #include "crypto_utils.h"
 #include "resource_handler.h"
 #include "anagram.h"
@@ -9,9 +10,7 @@
 #include <iostream>
 #include <sstream>
 #include <list>
-
-
-
+#include <boost/program_options.hpp>
 typedef std::vector<std::vector<std::string>>	str_2D;
 typedef std::vector<std::string>				strvec;
 
@@ -22,6 +21,16 @@ str_2D psorted;
 struct IntPair{
 	int x, y;
 };
+
+//Produces the key "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+std::string null_key(){
+	char ary[26];
+	for (int i = 0; i < 26; i++){
+		ary[i] = i + 'A';
+	}
+	std::string s(ary);
+	return s;
+}
 
 void invert(std::string& key){
 	std::string inv(ALPHA, '*');
@@ -111,7 +120,7 @@ strvec match_by_pattern(std::string in){
 void optimize(strvec& in){
 	if (in.size() > 16){
 		strvec temp;
-		int maxLen = 0;
+		unsigned int maxLen = 0;
 		int maxLenIdx = 0; //where is the longest word
 		for (size_t i = 0; i < 16; i++)
 		{
@@ -136,7 +145,7 @@ void optimize(str_2D& in){
 	while (pos < in.size()){
 		//if there are no direct pattern matches, or there are too many to be practical, remove those columns.
 		//also if the length of the word is too short.  longer words provide more info.
-		if (in[pos].size() == 0 || in[pos].size() > 250){
+		if (in[pos].size() == 0 || in[pos].size() > 300){
 			in.erase(in.begin() + pos);
 			pos = 0;
 		}
@@ -201,7 +210,7 @@ strvec solve_by_pattern(std::string message){
 	Graph g(ragged);
 	std::cout << "Graph created...searching...";
 	strvec out = g.getKeyVec();
-	std::cout << "DONE.\n\n";
+	std::cout << g.numcalls << " DONE.\n\n";
 	return out;
 }
 
@@ -219,10 +228,11 @@ void load_word_list(){
 	patt = empatternate(wordlist);
 }
 void test(std::string in){
-	std::string key = "QWERTYUIOPASDFGHJKLZXCVBNM";
+	std::string key = null_key();
+	shuffle(key);
 	remove_dp(in);	//sanitize
-	//std::cout << in << '\n';
-	//encode(in, key);
+	std::cout << in << '\n';
+	encode(in, key);
 	std::cout << in << '\n';
 	strvec keys = solve_by_pattern(in);
 	strvec messages;
@@ -234,17 +244,47 @@ void test(std::string in){
 	print_list(messages, "\n\n");
 }
 
-int main(){
-	std::cout << "Loading wordlist...";
+int main(int argc, char* argv[]){
+	/*std::cout << "Loading wordlist...";
 	load_word_list();
 	std::cout << "DONE.\n\n";
-
-	std::string s = "BMBU SUWKMNMOUN LXS VXBOUBOUH TMYMBR DUQTOD UBXKRD OX FQZU GXSZ Q ITUQNKSU GUQTOD UBXKRD OX NKIIXSO EXKS BUUHN NOSUBROD OX JQOOTU GMOD HMLLMVKTOMUN QBH XYUSVXFU ODUF RSQVU UBXKRD OX VXBLUNN EXKS NMBN QBH LXSNQZU ODUF IQOMUBVU UBXKRD OX OXMT KBOMT NXFU RXXH MN QVVXFITMNDUH VDQSMOE UBXKRD OX NUU NXFU RXXH MB EXKS BUMRDJXKS TXYU UBXKRD OX FXYU EXK OX JU KNULKT QBH DUTILKT OX XODUSN LQMOD UBXKRD OX FQZU SUQT ODU ODMBRN XL RXH DXIU UBXKRD OX SUFXYU QTT QBAMXKN LUQSN VXBVUSBMBR ODU LKOKSU";
-
+	std::string s = "In any operating system worthy of that name, including Windows, pointers don't designate locations on the memory chip directly. They are locations in process-specific virtual memory space and the operating system then allocates parts of the physical memory chip to store the content of the parts where the process actually stores anything on demand";
+	remove_dp(s);
+	print_histogram(s, 16);
+	std::cout << "\n\n";
 	test(s);
+	std::cout << "DONE. ";*/
 
-	std::cout << "DONE. ";
-	char c;
-	std::cin >> c;
+	namespace po = boost::program_options;
+	po::options_description desc("Crypto Usage");
+	desc.add_options()
+		("help,h", "Display this help message")
+		("key,k", po::value<std::string>(), "The 26-char key used to encrypt/decrypt messages")
+		("encrypt,e", "Encrypts the input using the given key")
+		("decrypt,d", "Decrypts the message using the given key.  If no key is given, Crypto will attempt to solve for one.")
+		("input,i", po::value<std::string>(), "Input text file")
+		("output,o", po::value<std::string>(), "Output text file")
+		("analyze,a", "Print an analysis of the input");
+	po::variables_map vm;
+	po::store(po::command_line_parser(argc, argv).options(desc).run(), vm);
+	po::notify(vm);
+
+	if (vm.count("help")){
+		std::cout << desc;
+	}
+	std::string input;
+	if (vm.count("input")){
+		input = vm["input"].as<std::string>();
+	}
+	if (vm.count("analyze")){
+		remove_dp(input);
+		print_histogram(input, 16);
+	}
+
+	if (argc == 1){
+		print_list(permute("ABCD"), '\n');
+		//char c;
+		//std::cin >> c;
+	}
 	return 0;
 }
