@@ -96,13 +96,13 @@ int factorial(int x){
 
 //copies each element of [in] [howmany] times
 void duplicate(std::vector<std::list<char> > &in, int howmany){
-	std::vector<std::list<char> > temp;
-	for (size_t i = 0; i < in.size(); i++){
+	std::vector<std::list<char> > temp = in;
+	in.clear();
+	for (size_t i = 0; i < temp.size(); i++){
 		for (int j = 0; j <= howmany; j++){
-			temp.push_back(in[i]);
+			in.push_back(temp[i]);
 		}
 	}
-	in = temp;
 }
 
 //inserts [what] at every position in the duplicated elements
@@ -121,8 +121,9 @@ std::vector<std::string> permute(std::string str){
 	int num = factorial(len);
 	std::vector<std::list<char> > perm;
 	perm.reserve(num);
-	perm.push_back(std::list<char>(1, str[0])); //initialize
-	for (int i = 0; i < len; i++){
+	//initialize the 0th vector with a list of length 1 containing the 0th char of the input
+	perm.push_back(std::list<char>(1, str[0]));
+	for (int i = 1; i < len; i++){
 		duplicate(perm, i);
 		weave(perm, str[i], i + 1);
 	}
