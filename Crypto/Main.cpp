@@ -1,5 +1,3 @@
-#define GVARS	//for the wordlist in resource_handler.h
-
 #include "wordlist.h"
 #include "crypto_utils.h"
 #include "anagram.h"
@@ -11,6 +9,7 @@
 #include <list>
 #include <boost/program_options.hpp>
 #include <boost/chrono.hpp>
+
 typedef std::vector<std::vector<std::string>>	str_2D;
 typedef std::vector<std::string>				strvec;
 
