@@ -1,8 +1,7 @@
 #define GVARS	//for the wordlist in resource_handler.h
 
-
+#include "wordlist.h"
 #include "crypto_utils.h"
-#include "resource_handler.h"
 #include "anagram.h"
 #include "analyze.h"
 #include <vector>
@@ -11,6 +10,7 @@
 #include <sstream>
 #include <list>
 #include <boost/program_options.hpp>
+#include <boost/chrono.hpp>
 typedef std::vector<std::vector<std::string>>	str_2D;
 typedef std::vector<std::string>				strvec;
 
@@ -78,14 +78,14 @@ std::string decode(std::string text, std::string key, bool){
 
 str_2D sort_by_length(strvec in){
 	size_t len = 0;
-	for (int i = 0; i < Handler::LENGTH_OF_list; i++){	//get maximum word length
+	for (int i = 0; i < wordlist.size(); i++){	//get maximum word length
 		if (in[i].length() > len){ len = in[i].length(); }
 	}
 	len++;
 	int *temp = new int[len];
 	for (size_t i = 0; i < len; i++){ temp[i] = 0; }	//reset temp to be filled with 0s
 
-	for (int i = 0; i < Handler::LENGTH_OF_list; i++){
+	for (int i = 0; i < wordlist.size(); i++){
 		temp[in[i].length()]++;	//get number of words for each length
 	}
 
@@ -97,7 +97,7 @@ str_2D sort_by_length(strvec in){
 
 	for (size_t i = 0; i < len; i++){ temp[i] = 0; }	//reset temp to be filled with 0s
 	//temp is now used to keep track of #words in each row
-	for (int i = 0; i < Handler::LENGTH_OF_list; i++){
+	for (int i = 0; i < wordlist.size(); i++){
 		out[in[i].length()][temp[in[i].length()]] = in[i];
 		temp[in[i].length()]++;
 	}
@@ -109,7 +109,7 @@ str_2D sort_by_length(strvec in){
 strvec match_by_pattern(std::string in){
 	strvec out;
 	std::string pattern = char_pattern(in);
-	for (size_t i = 0; i < Handler::LENGTH_OF_list; i++)
+	for (size_t i = 0; i < wordlist.size(); i++)
 	{
 		if (pattern == patt[i]){ out.push_back(wordlist[i]); }
 	}
@@ -209,15 +209,15 @@ strvec solve_by_pattern(std::string message){
 
 	Graph g(ragged);
 	std::cout << "Graph created...searching...";
-	strvec out = g.getKeyVec();
+	strvec out = g.get_key_vec();
 	std::cout << g.numcalls << " DONE.\n\n";
 	return out;
 }
 
 strvec empatternate(strvec& input){
 	strvec pattern_list;
-	pattern_list.resize(Handler::LENGTH_OF_list);
-	for (int i = 0; i < Handler::LENGTH_OF_list; i++){
+	pattern_list.resize(wordlist.size());
+	for (int i = 0; i < wordlist.size(); i++){
 		pattern_list[i] = char_pattern(input[i]);
 	}
 	return pattern_list;
@@ -242,6 +242,14 @@ void test(std::string in){
 		messages.push_back(temp);
 	}
 	print_list(messages, "\n\n");
+}
+
+void permutation_test(){
+	std::string key = "Q***TYUIO*ASDF*HJKLZ*CVB**";
+	boost::chrono::system_clock::time_point start = boost::chrono::system_clock::now();
+	fill_blanks(key);
+	boost::chrono::duration<double> sec = boost::chrono::system_clock::now() - start;
+	std::cout << "took " << sec.count() << " seconds\n";
 }
 
 int main(int argc, char* argv[]){
@@ -282,9 +290,11 @@ int main(int argc, char* argv[]){
 	}
 
 	if (argc == 1){
-		print_list(permute("ABCD"), '\n');
-		//char c;
-		//std::cin >> c;
+		std::cout << "Permutation Test\n\n\n";
+		permutation_test();
 	}
+
+	char c;
+	std::cin >> c;
 	return 0;
 }

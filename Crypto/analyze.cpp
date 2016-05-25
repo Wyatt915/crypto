@@ -8,7 +8,7 @@
 *  Counts the number of instances of each character from A to Z.
 *  @param in must be UPPERCASE
 */
-std::array<int, 26> countchars(std::string in){
+std::array<int, 26> count_chars(std::string in){
 	std::array<int, 26> out;
 
 	for (unsigned int i = 0; i < 26; i++){ out[i] = 0; }
@@ -23,7 +23,7 @@ std::array<int, 26> countchars(std::string in){
 *  Finds the frequency of occurance of each letter in a given std::string.
 */
 std::array<float, 26> frequency(std::string in){
-	std::array<int, 26> count = countchars(in);
+	std::array<int, 26> count = count_chars(in);
 	int sum = accumulate(count.begin(), count.end(), 0);
 	std::array<float, 26> freq;
 	for (int i = 0; i < 26; i++){
@@ -242,6 +242,38 @@ bool key_conflict(std::list<std::string> keys){
 	return false;
 }
 
+std::string missing_key_values(std::string k){
+	//if k is not 26 chars long throw an error.
+	std::string missing = "";
+	bool accounted[26] = { 0 };
+	for (int i = 0; i < 26; i++){
+		if (k[i] != '*'){ accounted[k[i] - 'A'] = true; }
+	}
+	for (int i = 0; i < 26; i++){
+		if (!accounted[i]){
+			missing += (char)(i + 'A');
+		}
+	}
+	return missing;
+}
+
+std::vector<std::string> fill_blanks(std::string k){
+	std::vector<std::string> out;
+	std::vector<int> blankSpots;
+	for (int i = 0; i < 26; i++){
+		if (k[i] == '*'){ blankSpots.push_back(i); }
+	}
+	std::vector<std::string> perms = permute(missing_key_values(k));
+	int numMissing = blankSpots.size();
+	for (size_t i = 0; i < perms.size(); i++){
+		out.push_back(k);
+		for (int j = 0; j < numMissing; j++){
+			out[i][blankSpots[j]] = perms[i][j];
+		}
+	}
+	return out;
+}
+
 //----------------[Graph Junk]---------------
 
 Graph::Graph(const std::vector<std::vector<std::string> >& data){
@@ -250,7 +282,7 @@ Graph::Graph(const std::vector<std::vector<std::string> >& data){
 	numcalls = 0;
 }
 
-std::list<std::string> Graph::getKeylist(){
+std::list<std::string> Graph::get_key_list(){
 	dft(0, 0);
 	keylist.unique();
 	if (!key_conflict(keylist)){
@@ -259,8 +291,8 @@ std::list<std::string> Graph::getKeylist(){
 	return keylist;
 }
 
-std::vector<std::string> Graph::getKeyVec(){
-	std::list<std::string> l = getKeylist();
+std::vector<std::string> Graph::get_key_vec(){
+	std::list<std::string> l = get_key_list();
 	std::vector<std::string> v{ make_move_iterator(begin(l)), make_move_iterator(end(l)) };
 	return v;
 }
