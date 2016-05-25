@@ -17,23 +17,17 @@
     <ClCompile Include="anagram.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="resource_handler.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="crypto_utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="analyze.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="wordlist.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="resource_handler.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="resource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="anagram.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -43,9 +37,9 @@
     <ClInclude Include="analyze.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="Crypto.rc" />
+    <ClInclude Include="wordlist.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="List.txt" />

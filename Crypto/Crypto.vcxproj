@@ -80,17 +80,13 @@
     <ClCompile Include="analyze.cpp" />
     <ClCompile Include="crypto_utils.cpp" />
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="resource_handler.cpp" />
+    <ClCompile Include="wordlist.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="anagram.h" />
     <ClInclude Include="analyze.h" />
     <ClInclude Include="crypto_utils.h" />
-    <ClInclude Include="resource.h" />
-    <ClInclude Include="resource_handler.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="Crypto.rc" />
+    <ClInclude Include="wordlist.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="List.txt" />
