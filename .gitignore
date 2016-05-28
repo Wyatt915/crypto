@@ -17,6 +17,12 @@ bld/
 [Oo]bj/
 /Crypto/Old/
 
+#Other stuff I find annoying
+*.vcxproj
+*.vcxproj.filters
+*.aps
+*.sln
+
 # Roslyn cache directories
 *.ide/
 
@@ -188,9 +194,3 @@ FakesAssemblies/
 GeneratedArtifacts/
 _Pvt_Extensions/
 ModelManifest.xml
-
-#Other stuff I find annoying
-*.vcxproj
-*.vcxproj.filters
-*.aps
-*.sln
