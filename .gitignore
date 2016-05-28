@@ -15,6 +15,7 @@ build/
 bld/
 [Bb]in/
 [Oo]bj/
+Old/
 
 # Roslyn cache directories
 *.ide/
@@ -187,3 +188,7 @@ FakesAssemblies/
 GeneratedArtifacts/
 _Pvt_Extensions/
 ModelManifest.xml
+
+#Other stuff I find annoying
+*.vcx*
+*.aps

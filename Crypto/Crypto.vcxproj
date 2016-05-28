@@ -86,7 +86,9 @@
     <ClInclude Include="anagram.h" />
     <ClInclude Include="analyze.h" />
     <ClInclude Include="crypto_utils.h" />
+    <ClInclude Include="freq.h" />
     <ClInclude Include="wordlist.h" />
+    <ClInclude Include="words.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="List.txt" />

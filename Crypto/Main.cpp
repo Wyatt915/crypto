@@ -77,14 +77,14 @@ std::string decode(std::string text, std::string key, bool){
 
 str_2D sort_by_length(strvec in){
 	size_t len = 0;
-	for (int i = 0; i < wordlist.size(); i++){	//get maximum word length
+	for (int i = 0; i < LENGTH_OF_LIST; i++){	//get maximum word length
 		if (in[i].length() > len){ len = in[i].length(); }
 	}
 	len++;
 	int *temp = new int[len];
 	for (size_t i = 0; i < len; i++){ temp[i] = 0; }	//reset temp to be filled with 0s
 
-	for (int i = 0; i < wordlist.size(); i++){
+	for (int i = 0; i < LENGTH_OF_LIST; i++){
 		temp[in[i].length()]++;	//get number of words for each length
 	}
 
@@ -96,7 +96,7 @@ str_2D sort_by_length(strvec in){
 
 	for (size_t i = 0; i < len; i++){ temp[i] = 0; }	//reset temp to be filled with 0s
 	//temp is now used to keep track of #words in each row
-	for (int i = 0; i < wordlist.size(); i++){
+	for (int i = 0; i < LENGTH_OF_LIST; i++){
 		out[in[i].length()][temp[in[i].length()]] = in[i];
 		temp[in[i].length()]++;
 	}
@@ -108,7 +108,7 @@ str_2D sort_by_length(strvec in){
 strvec match_by_pattern(std::string in){
 	strvec out;
 	std::string pattern = char_pattern(in);
-	for (size_t i = 0; i < wordlist.size(); i++)
+	for (int i = 0; i < LENGTH_OF_LIST; i++)
 	{
 		if (pattern == patt[i]){ out.push_back(wordlist[i]); }
 	}
@@ -215,8 +215,8 @@ strvec solve_by_pattern(std::string message){
 
 strvec empatternate(strvec& input){
 	strvec pattern_list;
-	pattern_list.resize(wordlist.size());
-	for (int i = 0; i < wordlist.size(); i++){
+	pattern_list.resize(LENGTH_OF_LIST);
+	for (int i = 0; i < LENGTH_OF_LIST; i++){
 		pattern_list[i] = char_pattern(input[i]);
 	}
 	return pattern_list;
@@ -244,11 +244,15 @@ void test(std::string in){
 }
 
 void permutation_test(){
-	std::string key = "Q***TYUIO*ASDF*HJKLZ*CVB**";
+	std::string key = "*********PASDFGHJKLZXCVBNM";
+	std::vector<std::string> keys;
 	boost::chrono::system_clock::time_point start = boost::chrono::system_clock::now();
-	fill_blanks(key);
+	keys = fill_blanks(key);
 	boost::chrono::duration<double> sec = boost::chrono::system_clock::now() - start;
 	std::cout << "took " << sec.count() << " seconds\n";
+	/*for (std::string s : keys){
+		std::cout << s << '\n';
+	}*/
 }
 
 int main(int argc, char* argv[]){
@@ -289,8 +293,10 @@ int main(int argc, char* argv[]){
 	}
 
 	if (argc == 1){
-		std::cout << "Permutation Test\n\n\n";
-		permutation_test();
+		//std::cout << "Permutation Test\n\n\n";
+		//permutation_test();
+		std::cout << char_pattern("ABRACADABRA") << '\n';
+		std::cout << char_pattern("ABRA-CADABRA") << '\n';
 	}
 
 	char c;

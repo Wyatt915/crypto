@@ -92,22 +92,27 @@ std::string char_pattern(std::string in){
 	for (int i = 0; i < l; i++){ pattern[i] = '*'; completed[i] = false; }
 
 	for (int i = 0; i < l; i++){
-		//look at the ith index of the input and find all other occurances of it.
-		//when all occurences have been found, set completed[] to true at each position of the occurance.
-		//mark each index in pattern[] with marker, increment marker, increment i, and loop
 		if (completed[i]){ continue; }
-		for (int j = i + 1; j < l; j++){
-			if ((in[i] == in[j]) && !completed[j]){
-				pattern[i] = marker;
-				pattern[j] = marker;
-				completed[j] = true;
-				match_found = true;
-			}
+		if (in[i] == '-' || in[i] == '\''){
+			pattern[i] = in[i];
+			completed[i] = true;
 		}
-		if (match_found){ marker++; }
-		match_found = false;
+		else{
+			//look at the ith index of the input and find all other occurances of it.
+			//when all occurences have been found, set completed[] to true at each position of the occurance.
+			//mark each index in pattern[] with marker, increment marker, increment i, and loop
+			for (int j = i + 1; j < l; j++){
+				if ((in[i] == in[j]) && !completed[j]){
+					pattern[i] = marker;
+					pattern[j] = marker;
+					completed[j] = true;
+					match_found = true;
+				}
+			}
+			if (match_found){ marker++; }
+			match_found = false;
+		}
 	}
-
 	std::string out(pattern, l);
 	delete[] pattern;
 	delete[] completed;

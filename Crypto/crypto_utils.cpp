@@ -86,51 +86,50 @@ std::string char_vector_to_string(std::vector<char> in){
 
 //------------[Permutation functions]------------
 
-int factorial(int x){
-	int y = 1;
-	for (int i = x; i > 0; i--){
-		y *= i;
-	}
-	return y;
-}
-
 //copies each element of [in] [howmany] times
-void duplicate(std::vector<std::list<char> > &in, int howmany){
-	std::vector<std::list<char> > temp = in;
-	in.clear();
-	for (size_t i = 0; i < temp.size(); i++){
-		for (int j = 0; j <= howmany; j++){
-			in.push_back(temp[i]);
+void duplicate(std::list<std::list<char> > &in, int howmany){
+	std::list<std::list<char>>::iterator iter = in.begin();
+	while (iter != in.end()){
+		for (int j = 0; j < howmany; j++){
+			in.insert(iter, *iter);
 		}
+		iter++;
 	}
 }
 
-//inserts [what] at every position in the duplicated elements
-void weave(std::vector<std::list<char> > &in, char what, int mod){
-	std::list<char>::iterator iter;
+//inserts [what] at every position in the duplicated elements	AB		[C]AB
+//That is, it inserts [what] along a diagonal, "weaving" it		AB  ->	A[C]B
+//into the array of values to give every permutation			AB		AB[C]
+void weave(std::list<std::list<char> > &in, char what, int mod){
+	std::list<char>::iterator charIter;
+	std::list<std::list<char>>::iterator listIter = in.begin();
 	for (size_t i = 0; i < in.size(); i++){
-		iter = in[i].begin();
-		std::advance(iter, (i%mod));
-		in[i].insert(iter, what);
+		charIter = listIter->begin();
+		std::advance(charIter, (i % mod));
+		*listIter->insert(charIter, what);
+		listIter++;
 	}
 }
 
 //gives all permutations of the chars in [str]
 std::vector<std::string> permute(std::string str){
-	int len = str.length();
-	int num = factorial(len);
-	std::vector<std::list<char> > perm;
-	perm.reserve(num);
-	//initialize the 0th vector with a list of length 1 containing the 0th char of the input
+	//initialize the 0th list with a list of length 1 containing the 0th char of the input
+	std::list<std::list<char> > perm;
 	perm.push_back(std::list<char>(1, str[0]));
-	for (int i = 1; i < len; i++){
+	
+	for (int i = 1; i < str.length(); i++){
 		duplicate(perm, i);
 		weave(perm, str[i], i + 1);
 	}
 
-	std::vector<std::string> out;
-	for (int i = 0; i < num; i++){
-		out.push_back(std::string(perm[i].begin(), perm[i].end()));
+	std::list<std::list<char>>::iterator listIter = perm.begin();
+	std::list<std::string> temp;
+	while (listIter != perm.end()){
+		temp.push_back(std::string(listIter->begin(), listIter->end()));
+		listIter++;
 	}
+	std::vector<std::string> out{	std::make_move_iterator(std::begin(temp)),
+									std::make_move_iterator(std::end(temp)) };
+	
 	return out;
 }

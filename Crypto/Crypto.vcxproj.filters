@@ -37,7 +37,13 @@
     <ClInclude Include="analyze.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="words.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="wordlist.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="freq.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
