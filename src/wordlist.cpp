@@ -7,7 +7,7 @@ std::vector<std::string> temp;
 std::vector<int> ftemp;
 std::vector<std::string> wordlist = temp;	//"definition"
 std::vector<std::string> patt = temp;
-std::vector<int> freq = ftemp;
+std::vector<int> freqs = ftemp;
 int LENGTH_OF_LIST = 0;
 
 void init_words(){
@@ -27,7 +27,7 @@ void init_words_freq(){
 	int f = 0;
 	while (str >> current >> f){
 		wordlist.push_back(current);
-		freq.push_back(f);
+		freqs.push_back(f);
 		LENGTH_OF_LIST++;
 	}
 }

@@ -24,7 +24,7 @@ std::array<int, 26> count_chars(std::string in){
 */
 std::array<float, 26> frequency(std::string in){
 	std::array<int, 26> count = count_chars(in);
-	int sum = accumulate(count.begin(), count.end(), 0);
+	int sum = std::accumulate(count.begin(), count.end(), 0);
 	std::array<float, 26> freq;
 	for (int i = 0; i < 26; i++){
 		freq[i] = (float)count[i] / (float)sum;
@@ -39,7 +39,7 @@ std::array<float, 26> frequency(std::string in){
 */
 void print_histogram(std::string in, int resolution){
 	std::array<float, 26> freq = frequency(in);
-	float max_val = *max_element(freq.begin(), freq.end());
+	float max_val = *std::max_element(freq.begin(), freq.end());
 
 	for (int i = 0, j = resolution; i < resolution; i++, j--){
 		std::cout << ' ';

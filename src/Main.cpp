@@ -7,8 +7,8 @@
 #include <iostream>
 #include <sstream>
 #include <list>
-#include <boost/program_options.hpp>
-#include <boost/chrono.hpp>
+//#include <boost/program_options.hpp>
+//#include <boost/chrono.hpp>
 
 typedef std::vector<std::vector<std::string>>	str_2D;
 typedef std::vector<std::string>				strvec;
@@ -201,7 +201,7 @@ strvec solve_by_pattern(std::string message){
 	ragged.resize(keys.size());
 	for (size_t i = 0; i < ragged.size(); i++)
 	{
-		ragged[i].assign(begin(keys[i]), end(keys[i]));
+		ragged[i].assign(std::begin(keys[i]), std::end(keys[i]));
 	}
 
 	optimize(ragged);
@@ -246,10 +246,10 @@ void test(std::string in){
 void permutation_test(){
 	std::string key = "*********PASDFGHJKLZXCVBNM";
 	std::vector<std::string> keys;
-	boost::chrono::system_clock::time_point start = boost::chrono::system_clock::now();
+	//boost::chrono::system_clock::time_point start = boost::chrono::system_clock::now();
 	keys = fill_blanks(key);
-	boost::chrono::duration<double> sec = boost::chrono::system_clock::now() - start;
-	std::cout << "took " << sec.count() << " seconds\n";
+	//boost::chrono::duration<double> sec = boost::chrono::system_clock::now() - start;
+	//std::cout << "took " << sec.count() << " seconds\n";
 	/*for (std::string s : keys){
 		std::cout << s << '\n';
 	}*/
@@ -266,40 +266,37 @@ int main(int argc, char* argv[]){
 	test(s);
 	std::cout << "DONE. ";*/
 
-	namespace po = boost::program_options;
-	po::options_description desc("Crypto Usage");
-	desc.add_options()
-		("help,h", "Display this help message")
-		("key,k", po::value<std::string>(), "The 26-char key used to encrypt/decrypt messages")
-		("encrypt,e", "Encrypts the input using the given key")
-		("decrypt,d", "Decrypts the message using the given key.  If no key is given, Crypto will attempt to solve for one.")
-		("input,i", po::value<std::string>(), "Input text file")
-		("output,o", po::value<std::string>(), "Output text file")
-		("analyze,a", "Print an analysis of the input");
-	po::variables_map vm;
-	po::store(po::command_line_parser(argc, argv).options(desc).run(), vm);
-	po::notify(vm);
-
-	if (vm.count("help")){
-		std::cout << desc;
-	}
-	std::string input;
-	if (vm.count("input")){
-		input = vm["input"].as<std::string>();
-	}
-	if (vm.count("analyze")){
-		remove_dp(input);
-		print_histogram(input, 16);
-	}
-
-	if (argc == 1){
-		//std::cout << "Permutation Test\n\n\n";
-		//permutation_test();
-		std::cout << char_pattern("ABRACADABRA") << '\n';
-		std::cout << char_pattern("ABRA-CADABRA") << '\n';
-	}
-
-	char c;
-	std::cin >> c;
-	return 0;
+//	namespace po = boost::program_options;
+//	po::options_description desc("Crypto Usage");
+//	desc.add_options()
+//		("help,h", "Display this help message")
+//		("key,k", po::value<std::string>(), "The 26-char key used to encrypt/decrypt messages")
+//		("encrypt,e", "Encrypts the input using the given key")
+//		("decrypt,d", "Decrypts the message using the given key.  If no key is given, Crypto will attempt to solve for one.")
+//		("input,i", po::value<std::string>(), "Input text file")
+//		("output,o", po::value<std::string>(), "Output text file")
+//		("analyze,a", "Print an analysis of the input");
+//	po::variables_map vm;
+//	po::store(po::command_line_parser(argc, argv).options(desc).run(), vm);
+//	po::notify(vm);
+//
+//	if (vm.count("help")){
+//		std::cout << desc;
+//	}
+//	std::string input;
+//	if (vm.count("input")){
+//		input = vm["input"].as<std::string>();
+//	}
+//	if (vm.count("analyze")){
+//		remove_dp(input);
+//		print_histogram(input, 16);
+//	}
+//
+//	if (argc == 1){
+//		//std::cout << "Permutation Test\n\n\n";
+//		//permutation_test();
+//		std::cout << char_pattern("ABRACADABRA") << '\n';
+//		std::cout << char_pattern("ABRA-CADABRA") << '\n';
+//	}
+	test("A LONG TIME AGO IN A GALAXY FAR FAR AWAY AGRICULTURALISTS DEEMD IT RIGHT AND PROPER TO CUNSTRUCTA GREAT AND TERRIBLE SPACE FARM.");
 }
