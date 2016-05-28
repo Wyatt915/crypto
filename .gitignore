@@ -15,7 +15,7 @@ build/
 bld/
 [Bb]in/
 [Oo]bj/
-Old/
+/Crypto/Old/
 
 # Roslyn cache directories
 *.ide/
@@ -190,5 +190,7 @@ _Pvt_Extensions/
 ModelManifest.xml
 
 #Other stuff I find annoying
-*.vcx*
+*.vcxproj
+*.vcxproj.filters
 *.aps
+*.sln
