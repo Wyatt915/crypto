@@ -7,8 +7,8 @@
 #include <iostream>
 #include <sstream>
 #include <list>
-//#include <boost/program_options.hpp>
-//#include <boost/chrono.hpp>
+#include <boost/program_options.hpp>
+#include <boost/chrono.hpp>
 
 typedef std::vector<std::vector<std::string>>	str_2D;
 typedef std::vector<std::string>				strvec;
@@ -27,7 +27,7 @@ std::string null_key(){
 	for (int i = 0; i < 26; i++){
 		ary[i] = i + 'A';
 	}
-	std::string s(ary);
+	std::string s(ary, 26);
 	return s;
 }
 
@@ -116,7 +116,7 @@ strvec match_by_pattern(std::string in){
 }
 
 //if there are more than 16 words, only keep the 16 longest.
-void optimize(strvec& in){
+void big_sixteen(strvec& in){
 	if (in.size() > 16){
 		strvec temp;
 		unsigned int maxLen = 0;
@@ -143,7 +143,6 @@ void optimize(str_2D& in){
 	size_t pos = 0;
 	while (pos < in.size()){
 		//if there are no direct pattern matches, or there are too many to be practical, remove those columns.
-		//also if the length of the word is too short.  longer words provide more info.
 		if (in[pos].size() == 0 || in[pos].size() > 300){
 			in.erase(in.begin() + pos);
 			pos = 0;
@@ -164,7 +163,7 @@ strvec solve_by_pattern(std::string message){
 		messageParsed.push_back(temp);
 	}
 
-	optimize(messageParsed);
+	big_sixteen(messageParsed);
 	std::cout << "\n\n";
 	print_list(messageParsed, ' ');
 	std::cout << "\n\n";
@@ -186,7 +185,6 @@ strvec solve_by_pattern(std::string message){
 		for (size_t j = 0; j < matched[i].size(); j++)
 		{
 			numkeys++;
-			//std::cout << generate_key(make_chapair_vec(matched[i][j], messageParsed[i])) << '\n';
 			templist.push_back(generate_key(make_chapair_vec(matched[i][j], messageParsed[i])));
 		}
 		templist.sort();
@@ -195,7 +193,7 @@ strvec solve_by_pattern(std::string message){
 	}
 
 
-	std::cout << numkeys << "Keys Found...Making graph...";
+	std::cout << numkeys << " Keys Found...Making graph...";
 
 	str_2D ragged;
 	ragged.resize(keys.size());
@@ -209,7 +207,7 @@ strvec solve_by_pattern(std::string message){
 	Graph g(ragged);
 	std::cout << "Graph created...searching...";
 	strvec out = g.get_key_vec();
-	std::cout << g.numcalls << " DONE.\n\n";
+	std::cout << " DONE.\n\n";
 	return out;
 }
 
@@ -228,12 +226,15 @@ void load_word_list(){
 }
 void test(std::string in){
 	std::string key = null_key();
+	std::cout << key << std::endl;
 	shuffle(key);
+	std::cout << key << std::endl;
 	remove_dp(in);	//sanitize
 	std::cout << in << '\n';
 	encode(in, key);
 	std::cout << in << '\n';
 	strvec keys = solve_by_pattern(in);
+	std::cout << keys.size();
 	strvec messages;
 	std::string temp;
 	for (size_t i = 0; i < keys.size(); i++){
@@ -246,18 +247,19 @@ void test(std::string in){
 void permutation_test(){
 	std::string key = "*********PASDFGHJKLZXCVBNM";
 	std::vector<std::string> keys;
-	//boost::chrono::system_clock::time_point start = boost::chrono::system_clock::now();
+	boost::chrono::system_clock::time_point start = boost::chrono::system_clock::now();
 	keys = fill_blanks(key);
-	//boost::chrono::duration<double> sec = boost::chrono::system_clock::now() - start;
-	//std::cout << "took " << sec.count() << " seconds\n";
+	boost::chrono::duration<double> sec = boost::chrono::system_clock::now() - start;
+	std::cout << "took " << sec.count() << " seconds\n";
 	/*for (std::string s : keys){
 		std::cout << s << '\n';
 	}*/
 }
 
 int main(int argc, char* argv[]){
-	/*std::cout << "Loading wordlist...";
 	load_word_list();
+	/*std::cout << "Loading wordlist...";
+	
 	std::cout << "DONE.\n\n";
 	std::string s = "In any operating system worthy of that name, including Windows, pointers don't designate locations on the memory chip directly. They are locations in process-specific virtual memory space and the operating system then allocates parts of the physical memory chip to store the content of the parts where the process actually stores anything on demand";
 	remove_dp(s);
@@ -298,5 +300,10 @@ int main(int argc, char* argv[]){
 //		std::cout << char_pattern("ABRACADABRA") << '\n';
 //		std::cout << char_pattern("ABRA-CADABRA") << '\n';
 //	}
-	test("A LONG TIME AGO IN A GALAXY FAR FAR AWAY AGRICULTURALISTS DEEMD IT RIGHT AND PROPER TO CUNSTRUCTA GREAT AND TERRIBLE SPACE FARM.");
+	std::string s = "In any operating system worthy of that name, including Windows, pointers don't designate locations on the memory chip directly. They are locations in process-specific virtual memory space and the operating system then allocates parts of the physical memory chip to store the content of the parts where the process actually stores anything on demand";
+	remove_dp(s);
+	test(s);
+	char c;
+	std::cin >> c;
+	return 0;
 }

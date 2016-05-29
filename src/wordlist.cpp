@@ -21,7 +21,7 @@ void init_words(){
 }
 
 void init_words_freq(){
-	std::string raw(WORDLIST, wordlist_len);
+	std::string raw(frequency, frequency_len);
 	std::stringstream str(raw);
 	std::string current = "";
 	int f = 0;

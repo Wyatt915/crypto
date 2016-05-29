@@ -289,10 +289,11 @@ Graph::Graph(const std::vector<std::vector<std::string> >& data){
 
 std::list<std::string> Graph::get_key_list(){
 	dft(0, 0);
+	keylist.sort();
 	keylist.unique();
-	if (!key_conflict(keylist)){
+	/*if (!key_conflict(keylist)){
 		merge_keys(keylist);
-	}
+	}*/
 	return keylist;
 }
 
@@ -337,7 +338,7 @@ void Graph::dft(unsigned int col, unsigned int row){
 				dft(col + 1, 0);			//if the next column exists, go to it.
 			}
 			else {							//if the next column does not exist
-				paths.push_back(path);	//we have a completed path. add it to the std::list.
+				paths.push_back(path);	//we have a completed path. add it to the list.
 				keylist.push_back(keysFromPath.back());
 				path.pop_back();			//remove the last index from the path
 				keysFromPath.pop_back();
