@@ -16,7 +16,6 @@ bld/
 [Bb]in/
 [Oo]bj/
 /Crypto/Old/
-stuff/
 
 #Other stuff I find annoying
 *.vcxproj
