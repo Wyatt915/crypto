@@ -2,12 +2,12 @@
 #include "crypto_utils.h"
 #include "anagram.h"
 #include "analyze.h"
-#include "substitution.h"
 #include <vector>
 #include <string>
 #include <iostream>
 #include <sstream>
 #include <list>
+
 
 typedef std::vector<std::vector<std::string>>	str_2D;
 typedef std::vector<std::string>				strvec;
@@ -19,6 +19,16 @@ str_2D psorted;
 struct IntPair{
 	int x, y;
 };
+
+//Produces the key "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+std::string null_key(){
+	char ary[26];
+	for (int i = 0; i < 26; i++){
+		ary[i] = i + 'A';
+	}
+	std::string s(ary, 26);
+	return s;
+}
 
 void invert(std::string& key){
 	std::string inv(ALPHA, '*');
@@ -64,6 +74,35 @@ std::string decode(std::string text, std::string key, bool){
 	return s;
 }
 
+str_2D sort_by_length(strvec in){
+	size_t len = 0;
+	for (int i = 0; i < LENGTH_OF_LIST; i++){	//get maximum word length
+		if (in[i].length() > len){ len = in[i].length(); }
+	}
+	len++;
+	int *temp = new int[len];
+	for (size_t i = 0; i < len; i++){ temp[i] = 0; }	//reset temp to be filled with 0s
+
+	for (int i = 0; i < LENGTH_OF_LIST; i++){
+		temp[in[i].length()]++;	//get number of words for each length
+	}
+
+	str_2D out(len);
+
+	for (size_t i = 0; i < len; i++){
+		out[i].resize(temp[i]); //initialize 2d array in the form [length][index_of_word]
+	}
+
+	for (size_t i = 0; i < len; i++){ temp[i] = 0; }	//reset temp to be filled with 0s
+	//temp is now used to keep track of #words in each row
+	for (int i = 0; i < LENGTH_OF_LIST; i++){
+		out[in[i].length()][temp[in[i].length()]] = in[i];
+		temp[in[i].length()]++;
+	}
+	delete[] temp;
+	return out;
+}
+
 //returns a list of all words of the same pattern
 strvec match_by_pattern(std::string in){
 	strvec out;
@@ -72,6 +111,102 @@ strvec match_by_pattern(std::string in){
 	{
 		if (pattern == patt[i]){ out.push_back(wordlist[i]); }
 	}
+	return out;
+}
+
+//if there are more than 16 words, only keep the 16 longest.
+void big_sixteen(strvec& in){
+	if (in.size() > 16){
+		strvec temp;
+		unsigned int maxLen = 0;
+		int maxLenIdx = 0; //where is the longest word
+		for (size_t i = 0; i < 16; i++)
+		{
+			for (size_t j = 0; j < in.size(); j++){
+				if (in[j].length() > maxLen){
+					maxLen = in[j].length();
+					maxLenIdx = j;
+				}
+			}
+			temp.push_back(in[maxLenIdx]);
+			in.erase(in.begin() + maxLenIdx);
+			maxLen = 0;
+			maxLenIdx = 0;
+		}
+		in = temp;
+	}
+}
+
+//minimize the search space of the graph
+void optimize(str_2D& in){
+	size_t pos = 0;
+	while (pos < in.size()){
+		//if there are no direct pattern matches, or there are too many to be practical, remove those columns.
+		if (in[pos].size() == 0 || in[pos].size() > 300){
+			in.erase(in.begin() + pos);
+			pos = 0;
+		}
+		else{ pos++; }
+	}
+}
+
+
+//pass the full encrypted message to this function.
+//generates a list of possible (incomplete) keys
+strvec solve_by_pattern(std::string message){
+	strvec messageParsed;
+	std::string temp;
+	std::stringstream sst(message);
+	while (sst >> temp){
+		//each word is its own array element.
+		messageParsed.push_back(temp);
+	}
+
+	big_sixteen(messageParsed);
+	std::cout << "\n\n";
+	print_list(messageParsed, ' ');
+	std::cout << "\n\n";
+
+	unsigned long numkeys = 0;//just for debugging.
+	//for each word, make a list of all words of the same pattern.
+	str_2D matched;
+	for (size_t i = 0; i < messageParsed.size(); i++)
+	{
+		matched.push_back(match_by_pattern(messageParsed[i]));
+	}
+	std::cout << "finding keys...";
+	//make a std::list of possible keys for each word
+	std::vector<std::list<std::string> >keys;
+	std::list<std::string> templist;
+	for (size_t i = 0; i < matched.size(); i++)
+	{
+		templist.clear();
+		for (size_t j = 0; j < matched[i].size(); j++)
+		{
+			numkeys++;
+			templist.push_back(generate_key(make_chapair_vec(matched[i][j], messageParsed[i])));
+		}
+		templist.sort();
+		templist.unique();
+		keys.push_back(templist);
+	}
+
+
+	std::cout << numkeys << " Keys Found...Making graph...";
+
+	str_2D ragged;
+	ragged.resize(keys.size());
+	for (size_t i = 0; i < ragged.size(); i++)
+	{
+		ragged[i].assign(std::begin(keys[i]), std::end(keys[i]));
+	}
+
+	optimize(ragged);
+
+	Graph g(ragged);
+	std::cout << "Graph created...searching...";
+	strvec out = g.get_key_vec();
+	std::cout << " DONE.\n\n";
 	return out;
 }
 
@@ -108,22 +243,21 @@ void test(std::string in){
 	print_list(messages, "\n\n");
 }
 
-void permutation_test(){
-	std::string key = "*********PASDFGHJKLZXCVBNM";
-	std::vector<std::string> keys;
-	keys = fill_blanks(key);
-	/*for (std::string s : keys){
-		std::cout << s << '\n';
-	}*/
-}
+//void permutation_test(){
+//	std::string key = "*********PASDFGHJKLZXCVBNM";
+//	std::vector<std::string> keys;
+//	boost::chrono::system_clock::time_point start = boost::chrono::system_clock::now();
+//	keys = fill_blanks(key);
+//	boost::chrono::duration<double> sec = boost::chrono::system_clock::now() - start;
+//	std::cout << "took " << sec.count() << " seconds\n";
+//	/*for (std::string s : keys){
+//	std::cout << s << '\n';
+//	}*/
+//}
 
 int main(int argc, char* argv[]){
 	load_word_list();
-	std::string s = "In any operating system worthy of that name, including Windows,
-		pointers don't designate locations on the memory chip directly. They are
-		locations in process-specific virtual memory space and the operating system then
-		allocates parts of the physical memory chip to store the content of the parts
-		where the process actually stores anything on demand";
+	std::string s = "In any operating system worthy of that name, including Windows, pointers don't designate locations on the memory chip directly. They are locations in process-specific virtual memory space and the operating system then allocates parts of the physical memory chip to store the content of the parts where the process actually stores anything on demand";
 	remove_dp(s);
 	test(s);
 	char c;

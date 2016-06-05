@@ -4,7 +4,9 @@
 #include <stdio.h>
 #include <string>
 #include <list>
-#include "crypto_utils.h"
+#include <algorithm>
+#include <math.h>
+#include <iostream>
 
 std::string char_pattern(std::string in);
 
@@ -17,6 +19,7 @@ std::array<int, 26> count_chars(std::string in);
 void print_histogram(std::string in, int resolution);
 std::string char_vector_to_string(std::vector<char>);
 bool key_conflict(std::string, std::string);
+//std::vector<std::string> match_by_pattern(std::string in);
 std::string merge_keys(std::string, std::string);
 std::string merge_keys(std::vector<std::string>);
 std::vector<ChaPair> make_chapair_vec(std::string, std::string);

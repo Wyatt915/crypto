@@ -1,7 +1,7 @@
 #include "analyze.h"
-#include <algorithm>
-#include <math.h>
-#include <iostream>
+#include "wordlist.h"
+#include "crypto_utils.h"
+
 
 
 /**
@@ -138,6 +138,17 @@ std::vector<ChaPair> make_chapair_vec(std::string x, std::string mapsto){
 		temp.x = x[i];
 		temp.mapsTo = mapsto[i];
 		out.push_back(temp);
+	}
+	return out;
+}
+
+//returns a list of all words of the same pattern
+std::vector<std::string> match_by_pattern(std::string in){
+	std::vector<std::string> out;
+	std::string pattern = char_pattern(in);
+	for (int i = 0; i < LENGTH_OF_LIST; i++)
+	{
+		if (pattern == patt[i]){ out.push_back(wordlist[i]); }
 	}
 	return out;
 }

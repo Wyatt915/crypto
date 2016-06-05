@@ -1,0 +1,4 @@
+In file included from S:\Programs\C++\Crypto\src\Main.cpp:9:0:
+c:\mingw\lib\gcc\mingw32\4.9.3\include\c++\sstream:41:1: error: expected initializer before 'namespace'
+ namespace std _GLIBCXX_VISIBILITY(default)
+ ^
