@@ -11,7 +11,7 @@ std::vector<int> freqs = ftemp;
 int LENGTH_OF_LIST = 0;
 
 void init_words(){
-	std::string raw(WORDLIST, wordlist_len);
+	std::string raw(words, words_len);
 	std::stringstream str(raw);
 	std::string current = "";
 	while (str >> current){

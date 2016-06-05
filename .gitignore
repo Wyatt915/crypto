@@ -23,6 +23,7 @@ stuff/
 *.vcxproj.filters
 *.aps
 *.sln
+*.bat
 
 # Roslyn cache directories
 *.ide/

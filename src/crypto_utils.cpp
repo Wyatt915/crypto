@@ -50,6 +50,18 @@ void remove_dpw(std::string& in){
 	in = copy;
 }
 
+void sanitize(std::string &in) {
+	capitalize(in);
+	std::string copy;
+	for (size_t i = 0; i < in.length(); i++) {
+		if ((in[i] >= 'A' && in[i] <= 'Z') || in[i] == ' ' || in[i] == '-' || in[i] == '\''){
+			copy.push_back(in[i]);
+		}
+		else{ copy.push_back(' '); }
+	}
+	in = copy;
+}
+
 void shuffle(std::string& in){
 	srand(time(0));
 	int r = 0;
@@ -116,7 +128,7 @@ std::vector<std::string> permute(std::string str){
 	//initialize the 0th list with a list of length 1 containing the 0th char of the input
 	std::list<std::list<char> > perm;
 	perm.push_back(std::list<char>(1, str[0]));
-	
+
 	for (int i = 1; i < str.length(); i++){
 		duplicate(perm, i);
 		weave(perm, str[i], i + 1);
@@ -130,6 +142,37 @@ std::vector<std::string> permute(std::string str){
 	}
 	std::vector<std::string> out{	std::make_move_iterator(std::begin(temp)),
 									std::make_move_iterator(std::end(temp)) };
-	
+
 	return out;
 }
+
+//------------[Currently unused]------------
+
+// std::vector<std::vector<std::string> > sort_by_length(std::vector<std::string> in){
+// 	size_t len = 0;
+// 	for (int i = 0; i < LENGTH_OF_LIST; i++){	//get maximum word length
+// 		if (in[i].length() > len){ len = in[i].length(); }
+// 	}
+// 	len++;
+// 	int *temp = new int[len];
+// 	for (size_t i = 0; i < len; i++){ temp[i] = 0; }	//reset temp to be filled with 0s
+//
+// 	for (int i = 0; i < LENGTH_OF_LIST; i++){
+// 		temp[in[i].length()]++;	//get number of words for each length
+// 	}
+//
+// 	std::vector<std::vector<std::string> > out(len);
+//
+// 	for (size_t i = 0; i < len; i++){
+// 		out[i].resize(temp[i]); //initialize 2d array in the form [length][index_of_word]
+// 	}
+//
+// 	for (size_t i = 0; i < len; i++){ temp[i] = 0; }	//reset temp to be filled with 0s
+// 	//temp is now used to keep track of #words in each row
+// 	for (int i = 0; i < LENGTH_OF_LIST; i++){
+// 		out[in[i].length()][temp[in[i].length()]] = in[i];
+// 		temp[in[i].length()]++;
+// 	}
+// 	delete[] temp;
+// 	return out;
+// }

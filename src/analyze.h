@@ -6,23 +6,11 @@
 #include <list>
 #include "crypto_utils.h"
 
-std::string char_pattern(std::string in);
+
 
 struct ChaPair{
 	char x, mapsTo;
 };
-
-//[in] must be UPPERCASE
-std::array<int, 26> count_chars(std::string in);
-void print_histogram(std::string in, int resolution);
-std::string char_vector_to_string(std::vector<char>);
-bool key_conflict(std::string, std::string);
-std::string merge_keys(std::string, std::string);
-std::string merge_keys(std::vector<std::string>);
-std::vector<ChaPair> make_chapair_vec(std::string, std::string);
-std::string generate_key(std::vector<ChaPair>);
-std::string missing_key_values(std::string);
-std::vector<std::string> fill_blanks(std::string);
 
 class Graph{
 public:
@@ -39,3 +27,15 @@ private:
 	std::string key;	//cumulative key being generated
 	std::list<std::string> keylist;
 };
+
+std::string char_pattern(std::string in);
+std::array<int, 26> count_chars(std::string in); //[in] must be UPPERCASE
+void print_histogram(std::string in, int resolution);
+std::string char_vector_to_string(std::vector<char>);
+bool key_conflict(std::string, std::string);
+std::string merge_keys(std::string, std::string);
+std::string merge_keys(std::vector<std::string>);
+std::vector<ChaPair> make_chapair_vec(std::string, std::string);
+std::string generate_key(std::vector<ChaPair>);
+std::string missing_key_values(std::string);
+std::vector<std::string> fill_blanks(std::string);
