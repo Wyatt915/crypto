@@ -119,7 +119,7 @@ std::vector<std::string> solve_by_pattern(std::string message){
 	}
 
 	big_sixteen(messageParsed);
-	print_list(messageParsed, ' ');
+	//print_list(messageParsed, ' ');
 
 	unsigned long numkeys = 0;//just for debugging.
 	//for each word, make a list of all words of the same pattern.

@@ -1,6 +1,5 @@
 #include "wordlist.h"
 #include "crypto_utils.h"
-#include "anagram.h"
 #include "analyze.h"
 #include "substitution.h"
 #include <vector>
@@ -39,9 +38,9 @@ void test(std::string in){
 	std::cout << key << std::endl;
 	shuffle(key);
 	std::cout << key << std::endl;
-	std::cout << in << '\n';
+	std::cout << in << "\n\n";
 	encode(in, key);
-	std::cout << in << '\n';
+	std::cout << in << "\n\n";
 	strvec keys = solve_by_pattern(in);
 	std::cout << keys.size();
 	strvec messages;
@@ -70,10 +69,15 @@ int main(int argc, char* argv[]){
 	sanitize(s);
 
 	int c;
-
-	while ( (c = getopt(argc, argv, "ht")) != -1 ) {
+	char *evalue = NULL;
+	std::string evalue_str;
+	while ( (c = getopt(argc, argv, "e:ht")) != -1 ) {
 		int this_option_optind = optind ? optind : 1;
 		switch (c) {
+			case 'e':
+				evalue = optarg;
+				evalue_str = std::string(evalue);
+				break;
 			case 'h':
 				std::cout << "Help message." << std::endl;
 				break;
@@ -85,6 +89,6 @@ int main(int argc, char* argv[]){
 				break;
 		}
 	}
-
+	std::cout << evalue_str << std::endl;
 	return 0;
 }

@@ -54,7 +54,7 @@ void sanitize(std::string &in) {
 	capitalize(in);
 	std::string copy;
 	for (size_t i = 0; i < in.length(); i++) {
-		if ((in[i] >= 'A' && in[i] <= 'Z') || in[i] == ' ' || in[i] == '-' || in[i] == '\''){
+		if ((in[i] >= 'A' && in[i] <= 'Z') || in[i] == ' '  || in[i] == '\''){ //|| in[i] == '-'
 			copy.push_back(in[i]);
 		}
 		else{ copy.push_back(' '); }
