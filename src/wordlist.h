@@ -8,4 +8,3 @@ extern std::vector<int> freqs;
 extern int LENGTH_OF_LIST;
 
 void init_words();
-void init_words_freq();

@@ -63,17 +63,40 @@ void permutation_test(){
 	}*/
 }
 
+void autosolve(std::string in){
+	strvec keys = solve_by_pattern(in);
+	std::cout << keys.size() << " Unique keys found.\n\n" << std::endl;
+	print_list(keys);
+	strvec messages;
+	std::string temp;
+	for (size_t i = 0; i < keys.size(); i++){
+		temp = decode(in, keys[i], true);
+		messages.push_back(temp);
+	}
+	print_list(messages, "\n\n");
+
+}
+
 int main(int argc, char* argv[]){
 	load_word_list();
 	std::string s = "In any operating system worthy of that name, including Windows, pointers don't designate locations on the memory chip directly. They are locations in process-specific virtual memory space and the operating system then allocates parts of the physical memory chip to store the content of the parts where the process actually stores anything on demand";
 	sanitize(s);
 
 	int c;
+	char *avalue = NULL;
 	char *evalue = NULL;
+	std::string avalue_str;
 	std::string evalue_str;
-	while ( (c = getopt(argc, argv, "e:ht")) != -1 ) {
+	bool a = false;
+	while ( (c = getopt(argc, argv, "a:e:ht")) != -1 ) {
 		int this_option_optind = optind ? optind : 1;
 		switch (c) {
+			case 'a':
+				avalue = optarg;
+				avalue_str = std::string(avalue);
+				sanitize(avalue_str);
+				a = true;
+				break;
 			case 'e':
 				evalue = optarg;
 				evalue_str = std::string(evalue);
@@ -89,6 +112,8 @@ int main(int argc, char* argv[]){
 				break;
 		}
 	}
-	std::cout << evalue_str << std::endl;
+	if(a){
+		autosolve(avalue_str);
+	}
 	return 0;
 }

@@ -1,10 +1,11 @@
 #include "wordlist.h"
-#include "words.h"
-#include "freq.h"
+#include "superlist.h"
 #include <sstream>
 
 std::vector<std::string> temp;
 std::vector<int> ftemp;
+
+
 std::vector<std::string> wordlist = temp;	//"definition"
 std::vector<std::string> patt = temp;
 std::vector<int> freqs = ftemp;
@@ -14,17 +15,7 @@ void init_words(){
 	std::string raw(words, words_len);
 	std::stringstream str(raw);
 	std::string current = "";
-	while (str >> current){
-		wordlist.push_back(current);
-		LENGTH_OF_LIST++;
-	}
-}
-
-void init_words_freq(){
-	std::string raw(frequency, frequency_len);
-	std::stringstream str(raw);
-	std::string current = "";
-	int f = 0;
+	int f;
 	while (str >> current >> f){
 		wordlist.push_back(current);
 		freqs.push_back(f);
