@@ -1,5 +1,5 @@
 #include "wordlist.h"
-#include "superlist.h"
+#include "superlist.inc"
 #include <sstream>
 
 std::vector<std::string> temp;
@@ -12,7 +12,7 @@ std::vector<int> freqs = ftemp;
 int LENGTH_OF_LIST = 0;
 
 void init_words(){
-	std::string raw(words, words_len);
+	std::string raw(superlist, superlist_len);
 	std::stringstream str(raw);
 	std::string current = "";
 	int f;

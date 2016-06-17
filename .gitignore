@@ -25,6 +25,7 @@ stuff/
 *.sln
 *.bat
 *.exe
+*.o
 
 # Roslyn cache directories
 *.ide/

@@ -38,4 +38,6 @@ std::string merge_keys(std::vector<std::string>);
 std::vector<ChaPair> make_chapair_vec(std::string, std::string);
 std::string generate_key(std::vector<ChaPair>);
 std::string missing_key_values(std::string);
-std::vector<std::string> fill_blanks(std::string);
+std::vector<std::string> fill_blanks(std::string ciphertext, std::string plaintext, std::string key);
+std::vector<bool> used_unknowns(std::string ciphertext, std::string plaintext);
+int prob_score(std::string plaintext);

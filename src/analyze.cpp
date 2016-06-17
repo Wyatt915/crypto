@@ -2,6 +2,9 @@
 #include <algorithm>
 #include <math.h>
 #include <iostream>
+#include "combo.hpp"
+#include <sstream>
+#include "wordlist.h"
 
 
 /**
@@ -262,22 +265,78 @@ std::string missing_key_values(std::string k){
 	return missing;
 }
 
-std::vector<std::string> fill_blanks(std::string k){
+//returns an array of bools (one for each letter). True if the letter exists in
+//the ciphertext and maps to an unknown letter in the plaintext.
+std::vector<bool> used_unknowns(std::string ciphertext, std::string plaintext){
+	std::vector<bool> unknowns(26, false);
+	for (size_t i = 0; i < ciphertext.length(); i++) {
+		if(plaintext[i] == '*'){
+			unknowns[ciphertext[i] - 'A'] = true;
+		}
+	}
+	return unknowns;
+}
+
+std::string invert(std::string key){
+	std::string inv(26, '*');
+	for (int i = 0; i < 26; i++){
+		if (key[i] != '*'){ inv[key[i] - 'A'] = i + 'A'; }
+	}
+	return inv;
+}
+
+
+std::vector<std::string> fill_blanks(std::string ciphertext, std::string plaintext, std::string key){
 	std::vector<std::string> out;
 	std::vector<int> blankSpots;
+
+	std::vector<bool> u = used_unknowns(ciphertext, plaintext);
+	int numMissing = 0;
 	for (int i = 0; i < 26; i++){
-		if (k[i] == '*'){ blankSpots.push_back(i); }
+		if (u[i]){
+			blankSpots.push_back(i);
+			numMissing++;
+		}
 	}
-	std::vector<std::string> perms = permute(missing_key_values(k));
-	int numMissing = blankSpots.size();
+
+	std::vector<std::string> perms = combos(numMissing, missing_key_values(key));
+
 	for (size_t i = 0; i < perms.size(); i++){
-		out.push_back(k);
+		out.push_back(key);
 		for (int j = 0; j < numMissing; j++){
 			out[i][blankSpots[j]] = perms[i][j];
 		}
 	}
+
 	return out;
 }
+
+int prob_score(std::string plaintext){
+		std::vector<std::string> parsed;
+		std::string temp;
+		std::stringstream s(plaintext);
+		while(s >> temp){
+			parsed.push_back(temp);
+			temp.clear();
+		}
+		int idx, score;
+
+		std::vector<std::string>::iterator iter;
+
+		for (size_t i = 0; i < parsed.size(); i++) {
+			iter = std::lower_bound(wordlist.begin(), wordlist.end(), parsed[i]);
+			if(iter != wordlist.end()){
+				idx = std::distance(wordlist.begin(), iter);
+				score += freqs[idx];
+			}
+			else{
+				score -= 1500;
+			}
+		}
+
+		return score;
+}
+
 
 //----------------[Graph Junk]---------------
 

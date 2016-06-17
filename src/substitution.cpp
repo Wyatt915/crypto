@@ -23,6 +23,15 @@ void invert(std::string &key){
 	key = inv;
 }
 
+std::string invert(std::string key, bool a){
+	std::string inv(26, '*');
+	for (int i = 0; i < 26; i++){
+		if (key[i] != '*'){ inv[key[i] - 'A'] = i + 'A'; }
+	}
+	return inv;
+}
+
+
 void encode(std::string &text, const std::string &key){
 	capitalize(text);
 	std::string ciphertext;

@@ -3,6 +3,7 @@
 
 std::string null_key();
 void invert(std::string &key);
+std::string invert(std::string key, bool a);
 void encode(std::string &text, const std::string &key);
 void decode(std::string &text, std::string key);
 std::string encode(std::string text, const std::string key, bool);

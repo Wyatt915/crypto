@@ -2,6 +2,7 @@
 #include "crypto_utils.h"
 #include "analyze.h"
 #include "substitution.h"
+#include <algorithm>
 #include <vector>
 #include <string>
 #include <iostream>
@@ -33,6 +34,8 @@ void load_word_list(){
 	init_words();
 	patt = empatternate(wordlist);
 }
+
+
 void test(std::string in){
 	std::string key = null_key();
 	std::cout << key << std::endl;
@@ -52,28 +55,41 @@ void test(std::string in){
 	print_list(messages, "\n\n");
 }
 
-void permutation_test(){
-	std::string key = "*********PASDFGHJKLZXCVBNM";
-	std::vector<std::string> keys;
 
-	keys = fill_blanks(key);
 
-	/*for (std::string s : keys){
-		std::cout << s << '\n';
-	}*/
-}
+void autosolve(std::string ciphertext){
+	strvec incompleteKeys = solve_by_pattern(ciphertext);
+	std::cout << incompleteKeys.size() << " Unique keys found.\n\n" << std::endl;
 
-void autosolve(std::string in){
-	strvec keys = solve_by_pattern(in);
-	std::cout << keys.size() << " Unique keys found.\n\n" << std::endl;
-	print_list(keys);
 	strvec messages;
 	std::string temp;
-	for (size_t i = 0; i < keys.size(); i++){
-		temp = decode(in, keys[i], true);
+	for (size_t i = 0; i < incompleteKeys.size(); i++){
+		invert(incompleteKeys[i]);	//VERY IMPORTANT (to maintain proper mapping in the fill_blanks function)
+		temp = encode(ciphertext, incompleteKeys[i], true);
 		messages.push_back(temp);
 	}
-	print_list(messages, "\n\n");
+
+	strvec keys, tempkeys;
+	for (size_t i = 0; i < incompleteKeys.size(); i++){
+		tempkeys = fill_blanks(ciphertext, messages[i], incompleteKeys[i]);
+		keys.insert(keys.end(), tempkeys.begin(), tempkeys.end());
+	}
+
+	messages.clear();
+
+	std::vector<int> rank;
+	int r = 0;
+	int i = 0;
+	for (size_t i = 0; i < keys.size(); i++) {
+		temp = encode(ciphertext, keys[i], true);
+		rank.push_back(prob_score(temp));
+		messages.push_back(temp);
+	}
+
+	std::vector<int>::iterator maximum = std::max_element(rank.begin(), rank.end());
+	int idx = std::distance(rank.begin(), maximum);
+	std::cout << ciphertext << "\n\n";
+	std::cout << messages[idx] << std::endl;
 
 }
 
