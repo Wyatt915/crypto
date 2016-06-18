@@ -35,28 +35,6 @@ void load_word_list(){
 	patt = empatternate(wordlist);
 }
 
-
-void test(std::string in){
-	std::string key = null_key();
-	std::cout << key << std::endl;
-	shuffle(key);
-	std::cout << key << std::endl;
-	std::cout << in << "\n\n";
-	encode(in, key);
-	std::cout << in << "\n\n";
-	strvec keys = solve_by_pattern(in);
-	std::cout << keys.size();
-	strvec messages;
-	std::string temp;
-	for (size_t i = 0; i < keys.size(); i++){
-		temp = decode(in, keys[i], true);
-		messages.push_back(temp);
-	}
-	print_list(messages, "\n\n");
-}
-
-
-
 void autosolve(std::string ciphertext){
 	strvec incompleteKeys = solve_by_pattern(ciphertext);
 	std::cout << incompleteKeys.size() << " Unique keys found.\n\n" << std::endl;
@@ -67,6 +45,7 @@ void autosolve(std::string ciphertext){
 		invert(incompleteKeys[i]);	//VERY IMPORTANT (to maintain proper mapping in the fill_blanks function)
 		temp = encode(ciphertext, incompleteKeys[i], true);
 		messages.push_back(temp);
+		std::cout << temp << std::endl;
 	}
 
 	strvec keys, tempkeys;
@@ -77,9 +56,10 @@ void autosolve(std::string ciphertext){
 
 	messages.clear();
 
+	std::cout << "Only " << keys.size() << " permutations to go!" << std::endl;
+
 	std::vector<int> rank;
 	int r = 0;
-	int i = 0;
 	for (size_t i = 0; i < keys.size(); i++) {
 		temp = encode(ciphertext, keys[i], true);
 		rank.push_back(prob_score(temp));
@@ -87,10 +67,24 @@ void autosolve(std::string ciphertext){
 	}
 
 	std::vector<int>::iterator maximum = std::max_element(rank.begin(), rank.end());
+	std::vector<int>::iterator minimum = std::min_element(rank.begin(), rank.end());
+
 	int idx = std::distance(rank.begin(), maximum);
 	std::cout << ciphertext << "\n\n";
-	std::cout << messages[idx] << std::endl;
+	std::cout << messages[idx] << "\n\n";
+	std::cout << "Max: " << *maximum << "\tMin: " << *minimum;
 
+}
+
+void test(std::string in){
+	std::string key = null_key();
+	std::cout << key << std::endl;
+	shuffle(key);
+	std::cout << key << std::endl;
+	std::cout << in << "\n\n";
+	encode(in, key);
+	std::cout << in << "\n\n";
+	autosolve(in);
 }
 
 int main(int argc, char* argv[]){

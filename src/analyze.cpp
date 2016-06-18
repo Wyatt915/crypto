@@ -298,7 +298,7 @@ std::vector<std::string> fill_blanks(std::string ciphertext, std::string plainte
 			numMissing++;
 		}
 	}
-
+	std::cout << numMissing << "nPr" << missing_key_values(key).length() << std::endl;
 	std::vector<std::string> perms = combos(numMissing, missing_key_values(key));
 
 	for (size_t i = 0; i < perms.size(); i++){
@@ -319,8 +319,8 @@ int prob_score(std::string plaintext){
 			parsed.push_back(temp);
 			temp.clear();
 		}
-		int idx, score;
-
+		int idx = 0;
+		int score = 0;
 		std::vector<std::string>::iterator iter;
 
 		for (size_t i = 0; i < parsed.size(); i++) {
@@ -330,7 +330,7 @@ int prob_score(std::string plaintext){
 				score += freqs[idx];
 			}
 			else{
-				score -= 1500;
+				score -= AVERAGE_FREQ;
 			}
 		}
 

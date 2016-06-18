@@ -25,4 +25,4 @@ wordlist.o: wordlist.cpp
 	$(CC) $(CFLAGS) wordlist.cpp
 
 clean:
-	rm -rf *o
+	del /S *.o
