@@ -321,16 +321,18 @@ int prob_score(std::string plaintext){
 		}
 		int idx = 0;
 		int score = 0;
-		std::vector<std::string>::iterator iter;
+		//std::vector<std::string>::iterator iter;
 
 		for (size_t i = 0; i < parsed.size(); i++) {
-			iter = std::lower_bound(wordlist.begin(), wordlist.end(), parsed[i]);
-			if(iter != wordlist.end()){
-				idx = std::distance(wordlist.begin(), iter);
+			//iter = std::lower_bound(wordlist.begin(), wordlist.end(), parsed[i]);
+            idx = binary_search(wordlist, parsed[i]);
+			if(idx > -1){
+				//idx = std::distance(wordlist.begin(), iter);
 				score += freqs[idx];
 			}
 			else{
-				score -= AVERAGE_FREQ;
+                //std::cout << "#" << std::endl;
+				score -= 2 * AVERAGE_FREQ;
 			}
 		}
 

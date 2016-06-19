@@ -2,10 +2,12 @@
 #include "crypto_utils.h"
 #include "analyze.h"
 #include "substitution.h"
+#include "meta.hpp"
 #include <algorithm>
 #include <vector>
 #include <string>
 #include <iostream>
+#include <fstream>
 #include <sstream>
 #include <list>
 #include <getopt.h>
@@ -87,33 +89,76 @@ void test(std::string in){
 	autosolve(in);
 }
 
+std::string read(std::string filename){
+	std::string line;
+    std::stringstream data;
+    std::ifstream infile(filename.c_str());
+    if(infile.is_open()){
+        while(std::getline(infile,line)){
+            data << line;
+        }
+        infile.close();
+    }
+    return data.str();
+}
+
+void write(std::string filename, std::string data){
+	std::ofstream outfile (filename, std::ios::out);
+	if(outfile.is_open()) {
+		outfile << data;
+		outfile.close();
+	}
+}
+
 int main(int argc, char* argv[]){
 	load_word_list();
+    //std::cout << wordlist[9580] << '\t' << binary_search(wordlist, wordlist[9580]) << std::endl;
+    //std::cout << binary_search(wordlist, "GOOBLE") << std::endl;
 	std::string s = "In any operating system worthy of that name, including Windows, pointers don't designate locations on the memory chip directly. They are locations in process-specific virtual memory space and the operating system then allocates parts of the physical memory chip to store the content of the parts where the process actually stores anything on demand";
 	sanitize(s);
-
 	int c;
-	char *avalue = NULL;
-	char *evalue = NULL;
+
 	std::string avalue_str;
+	std::string dvalue_str;
 	std::string evalue_str;
-	bool a = false;
-	while ( (c = getopt(argc, argv, "a:e:ht")) != -1 ) {
+    std::string kvalue_str;
+	std::string ovalue_str;
+	bool a_opt = false;
+	bool d_opt = false;
+	bool e_opt = false;
+	bool f_opt = false;
+	bool k_opt = false;
+	bool o_opt = false;
+	while ( (c = getopt(argc, argv, "a:d:e:k:o:fht")) != -1 ) {
 		int this_option_optind = optind ? optind : 1;
 		switch (c) {
 			case 'a':
-				avalue = optarg;
-				avalue_str = std::string(avalue);
+				avalue_str = std::string(optarg);
 				sanitize(avalue_str);
-				a = true;
+				a_opt = true;
+				break;
+			case 'd':
+				d_opt = true;
+				dvalue_str = std::string(optarg);
 				break;
 			case 'e':
-				evalue = optarg;
-				evalue_str = std::string(evalue);
-				break;
+				e_opt = true;
+				evalue_str = std::string(optarg);
+    		    break;
+            case 'f':
+                f_opt = true;
+                break;
 			case 'h':
-				std::cout << "Help message." << std::endl;
-				break;
+				std::cout << help << std::endl;
+				return 0;
+            case 'k':
+                k_opt = true;
+                kvalue_str = std::string(optarg);
+                break;
+            case 'o':
+                o_opt = true;
+                ovalue_str = std::string(optarg);
+                break;
 			case 't':
 				test(s);
 				break;
@@ -122,8 +167,29 @@ int main(int argc, char* argv[]){
 				break;
 		}
 	}
-	if(a){
+	if(a_opt){
+		if(f_opt){ avalue_str = read(avalue_str); }
+        sanitize(avalue_str);
 		autosolve(avalue_str);
+		return 0;
+	}
+	if(e_opt){
+        if(f_opt){ evalue_str = read(evalue_str); }
+		if(!k_opt){
+			kvalue_str = null_key();
+			shuffle(kvalue_str);
+			std::cout << "Using randomly generated key: " << kvalue_str << std::endl;
+		}
+        sanitize(evalue_str);
+		encode(evalue_str, kvalue_str);
+        if(!o_opt){ std::cout << evalue_str << std::endl; }
+        else{ write(ovalue_str, evalue_str); }
+	}
+	if(d_opt && k_opt){
+        if(f_opt){ dvalue_str = read(dvalue_str); }
+        sanitize(dvalue_str);
+		decode(dvalue_str, kvalue_str);
+		std::cout << dvalue_str << std::endl;
 	}
 	return 0;
 }

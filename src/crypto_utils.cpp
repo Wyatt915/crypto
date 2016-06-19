@@ -4,6 +4,26 @@
 #include <vector>
 #include <iostream>
 #include <list>
+#include <math.h>
+
+int binary_search(const std::vector<std::string> &v, std::string what){
+    int lower_bound = 0;
+    int upper_bound = v.size() - 1;
+    int pivot = 0;
+    while(upper_bound >= lower_bound){
+        pivot = floor((upper_bound + lower_bound)/2);
+        if(v[pivot] < what){
+            lower_bound = pivot + 1;
+            continue;
+        }
+        if(v[pivot] > what){
+            upper_bound = pivot - 1;
+            continue;
+        }
+        if(v[pivot] == what){ return pivot; }
+    }
+    return -1;
+}
 
 void capitalize(std::string& in){
 	for (size_t i = 0; i < in.length(); i++){
