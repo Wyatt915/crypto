@@ -26,3 +26,6 @@ wordlist.o: wordlist.cpp
 
 clean:
 	rm -rf *.o
+
+clean-win:
+	del /S *.o

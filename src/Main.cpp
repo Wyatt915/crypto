@@ -78,28 +78,34 @@ void autosolve(std::string ciphertext){
 
 }
 
-void test(std::string in){
+void test(){
+	std::string s = "In any operating system worthy of that name, including "
+	"Windows, pointers don't designate locations on the memory chip directly. "
+	"They are locations in process-specific virtual memory space and the "
+	"operating system then allocates parts of the physical memory chip to store "
+	"the content of the parts where the process actually stores anything on demand";
+	sanitize(s);
 	std::string key = null_key();
 	std::cout << key << std::endl;
 	shuffle(key);
 	std::cout << key << std::endl;
-	std::cout << in << "\n\n";
-	encode(in, key);
-	std::cout << in << "\n\n";
-	autosolve(in);
+	std::cout << s << "\n\n";
+	encode(s, key);
+	std::cout << s << "\n\n";
+	autosolve(s);
 }
 
 std::string read(std::string filename){
 	std::string line;
-    std::stringstream data;
-    std::ifstream infile(filename.c_str());
-    if(infile.is_open()){
-        while(std::getline(infile,line)){
-            data << line;
-        }
-        infile.close();
-    }
-    return data.str();
+	std::stringstream data;
+	std::ifstream infile(filename.c_str());
+	if(infile.is_open()){
+		while(std::getline(infile,line)){
+			data << line;
+		}
+		infile.close();
+	}
+	return data.str();
 }
 
 void write(std::string filename, std::string data){
@@ -112,16 +118,13 @@ void write(std::string filename, std::string data){
 
 int main(int argc, char* argv[]){
 	load_word_list();
-    //std::cout << wordlist[9580] << '\t' << binary_search(wordlist, wordlist[9580]) << std::endl;
-    //std::cout << binary_search(wordlist, "GOOBLE") << std::endl;
-	std::string s = "In any operating system worthy of that name, including Windows, pointers don't designate locations on the memory chip directly. They are locations in process-specific virtual memory space and the operating system then allocates parts of the physical memory chip to store the content of the parts where the process actually stores anything on demand";
-	sanitize(s);
+
 	int c;
 
 	std::string avalue_str;
 	std::string dvalue_str;
 	std::string evalue_str;
-    std::string kvalue_str;
+	std::string kvalue_str;
 	std::string ovalue_str;
 	bool a_opt = false;
 	bool d_opt = false;
@@ -144,23 +147,23 @@ int main(int argc, char* argv[]){
 			case 'e':
 				e_opt = true;
 				evalue_str = std::string(optarg);
-    		    break;
-            case 'f':
-                f_opt = true;
-                break;
+				break;
+			case 'f':
+				f_opt = true;
+				break;
 			case 'h':
 				std::cout << help << std::endl;
 				return 0;
-            case 'k':
-                k_opt = true;
-                kvalue_str = std::string(optarg);
-                break;
-            case 'o':
-                o_opt = true;
-                ovalue_str = std::string(optarg);
-                break;
+			case 'k':
+				k_opt = true;
+				kvalue_str = std::string(optarg);
+				break;
+			case 'o':
+				o_opt = true;
+				ovalue_str = std::string(optarg);
+				break;
 			case 't':
-				test(s);
+				test();
 				break;
 			default:
 				std::cout << "Bruh." << std::endl;
@@ -169,25 +172,25 @@ int main(int argc, char* argv[]){
 	}
 	if(a_opt){
 		if(f_opt){ avalue_str = read(avalue_str); }
-        sanitize(avalue_str);
+		sanitize(avalue_str);
 		autosolve(avalue_str);
 		return 0;
 	}
 	if(e_opt){
-        if(f_opt){ evalue_str = read(evalue_str); }
+		if(f_opt){ evalue_str = read(evalue_str); }
 		if(!k_opt){
 			kvalue_str = null_key();
 			shuffle(kvalue_str);
 			std::cout << "Using randomly generated key: " << kvalue_str << std::endl;
 		}
-        sanitize(evalue_str);
+		sanitize(evalue_str);
 		encode(evalue_str, kvalue_str);
-        if(!o_opt){ std::cout << evalue_str << std::endl; }
-        else{ write(ovalue_str, evalue_str); }
+		if(!o_opt){ std::cout << evalue_str << std::endl; }
+		else{ write(ovalue_str, evalue_str); }
 	}
 	if(d_opt && k_opt){
-        if(f_opt){ dvalue_str = read(dvalue_str); }
-        sanitize(dvalue_str);
+		if(f_opt){ dvalue_str = read(dvalue_str); }
+		sanitize(dvalue_str);
 		decode(dvalue_str, kvalue_str);
 		std::cout << dvalue_str << std::endl;
 	}

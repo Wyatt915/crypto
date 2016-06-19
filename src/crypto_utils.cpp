@@ -10,7 +10,7 @@ int binary_search(const std::vector<std::string> &v, std::string what){
     int lower_bound = 0;
     int upper_bound = v.size() - 1;
     int pivot = 0;
-    while(upper_bound >= lower_bound){
+    while(lower_bound <= upper_bound){
         pivot = floor((upper_bound + lower_bound)/2);
         if(v[pivot] < what){
             lower_bound = pivot + 1;
