@@ -1,28 +1,57 @@
-#include "crypto_utils.h"
+#include "analyze.hpp"
+#include "crypto_utils.hpp"
+#include "wordlist.h"
+#include <algorithm>
 #include <cstdlib>
 #include <ctime>
-#include <vector>
 #include <iostream>
 #include <list>
 #include <math.h>
+#include <vector>
+#include <sstream>
 
-int binary_search(const std::vector<std::string> &v, std::string what){
+crypto_error::crypto_error(std::string err){
+    what = err;
+}
+
+
+namespace utils{
+
+bool consecutive_spaces(char lhs, char rhs) { return (lhs == rhs) && (lhs == ' '); }
+
+//returns the index of [what] in [wordlist].  returns -1 for an unsucessful search
+int binary_search(std::string what){
     int lower_bound = 0;
-    int upper_bound = v.size() - 1;
+    int upper_bound = wordlist.size() - 1;
     int pivot = 0;
     while(lower_bound <= upper_bound){
         pivot = floor((upper_bound + lower_bound)/2);
-        if(v[pivot] < what){
+        if(wordlist[pivot] < what){
             lower_bound = pivot + 1;
             continue;
         }
-        if(v[pivot] > what){
+        if(wordlist[pivot] > what){
             upper_bound = pivot - 1;
             continue;
         }
-        if(v[pivot] == what){ return pivot; }
+        if(wordlist[pivot] == what){ return pivot; }
     }
     return -1;
+}
+
+std::vector<std::string> parse(std::string message){
+    //remove consecutive spaces
+    std::string::iterator new_end = std::unique(message.begin(), message.end(), consecutive_spaces);
+    message.erase(new_end, message.end());
+
+    std::vector<std::string> out;
+    std::string temp;
+	std::stringstream sst(message);
+	while (sst >> temp){
+		//each word is its own array element.
+		out.push_back(temp);
+	}
+    return out;
 }
 
 void capitalize(std::string& in){
@@ -79,6 +108,10 @@ void sanitize(std::string &in) {
 		}
 		else{ copy.push_back(' '); }
 	}
+
+    std::string::iterator new_end = std::unique(copy.begin(), copy.end(), consecutive_spaces);
+    copy.erase(new_end, copy.end());
+
 	in = copy;
 }
 
@@ -94,10 +127,27 @@ void shuffle(std::string& in){
 	}
 }
 
+void print_color(std::string s){
+	std::vector<std::string> parsed = parse(s);
+	std::string red = "\x1b[31;1m";
+	std::string def = "\x1b[0m";  //default
+	std::string blu = "\x1b[34;1m";
+	for(int i = 0; i < parsed.size(); i++){
+		if(!analyze::is_complete(parsed[i])){
+			parsed[i] = blu + parsed[i] + def;
+		}
+		else if(!analyze::is_known(parsed[i])){
+			parsed[i] = red + parsed[i] + def;
+		}
+	}
+	print_list(parsed);
+}
+
 void print_list(const std::vector<std::string>& in){
 	for (std::string elem : in){
 		std::cout << elem << ' ';
 	}
+    std::cout << std::endl;
 }
 
 void print_list(const std::vector<std::string>& in, char delim){
@@ -105,6 +155,7 @@ void print_list(const std::vector<std::string>& in, char delim){
 		std::cout << elem << delim;
 	}
 }
+
 void print_list(const std::vector<std::string>& in, std::string delim){
 	for (std::string elem : in){
 		std::cout << elem << delim;
@@ -196,3 +247,4 @@ std::vector<std::string> permute(std::string str){
 // 	delete[] temp;
 // 	return out;
 // }
+}

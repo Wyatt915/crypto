@@ -1,5 +1,6 @@
-#include "wordlist.h"
 #include "superlist.inc"
+#include "wordlist.h"
+
 #include <sstream>
 
 std::vector<std::string> temp;

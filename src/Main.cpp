@@ -1,80 +1,89 @@
+#include "analyze.hpp"
+#include "crypto_utils.hpp"
+#include "substitution.hpp"
 #include "wordlist.h"
-#include "crypto_utils.h"
-#include "analyze.h"
-#include "substitution.h"
-#include "meta.hpp"
-#include <algorithm>
-#include <vector>
-#include <string>
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <list>
-#include <getopt.h>
+#include "process.hpp"
 
-typedef std::vector<std::vector<std::string>>	str_2D;
-typedef std::vector<std::string>				strvec;
+#include <algorithm>
+#include <ctime>
+#include <fstream>
+#include <getopt.h>
+#include <iostream>
+#include <list>
+#include <sstream>
+#include <string>
+#include <vector>
+
+typedef std::vector<std::vector<std::string>>	vvstring;
+typedef std::vector<std::string> 				vstring;
 
 const int ALPHA = 26;
-str_2D sorted;
-str_2D psorted;
 
-struct IntPair{
-	int x, y;
-};
-
-strvec empatternate(strvec& input){
-	strvec pattern_list;
-	pattern_list.resize(LENGTH_OF_LIST);
-	for (int i = 0; i < LENGTH_OF_LIST; i++){
-		pattern_list[i] = char_pattern(input[i]);
-	}
-	return pattern_list;
-}
+const std::string help =
+  "\nUsage: crypto [OPTION]...\n"
+  "     -a \"string\"      Automatically attempt to solve substitution ciphers.\n"
+  "     -d \"string\"      Decrypts a substitution cipher. Requires -k.\n"
+  "     -e \"string\"      Encrypts a message using the key given by the -k option.\n"
+  "                      If no key is given, a key will be randomly generated.\n"
+  "     -h               Display this message.\n";
 
 void load_word_list(){
 	init_words();
-	patt = empatternate(wordlist);
+	patt.resize(LENGTH_OF_LIST);
+	for (int i = 0; i < LENGTH_OF_LIST; i++){
+		patt[i] = analyze::char_pattern(wordlist[i]);
+	}
+}
+
+struct ScoredMessage{
+	std::string message;
+	int score;
+	ScoredMessage(std::string s): message(s){ score = analyze::prob_score(s); }
+};
+
+bool operator<(const ScoredMessage& lhs, const ScoredMessage& rhs){
+	return lhs.score < rhs.score;
 }
 
 void autosolve(std::string ciphertext){
-	strvec incompleteKeys = solve_by_pattern(ciphertext);
-	std::cout << incompleteKeys.size() << " Unique keys found.\n\n" << std::endl;
+	vstring incompleteKeys = subst::solve_by_pattern(ciphertext);
 
-	strvec messages;
+	vstring messages;
 	std::string temp;
 	for (size_t i = 0; i < incompleteKeys.size(); i++){
-		invert(incompleteKeys[i]);	//VERY IMPORTANT (to maintain proper mapping in the fill_blanks function)
-		temp = encode(ciphertext, incompleteKeys[i], true);
+		subst::invert(incompleteKeys[i]);	//VERY IMPORTANT (to maintain proper mapping in the fill_blanks function)
+		temp = subst::encode(ciphertext, incompleteKeys[i], true);
 		messages.push_back(temp);
-		std::cout << temp << std::endl;
+		utils::print_color(temp);
+		std::cout << std::endl;
 	}
 
-	strvec keys, tempkeys;
+	vstring keys, tempkeys;
 	for (size_t i = 0; i < incompleteKeys.size(); i++){
-		tempkeys = fill_blanks(ciphertext, messages[i], incompleteKeys[i]);
+		tempkeys = process::fill_blanks(ciphertext, messages[i], incompleteKeys[i]);
 		keys.insert(keys.end(), tempkeys.begin(), tempkeys.end());
 	}
 
 	messages.clear();
-
-	std::cout << "Only " << keys.size() << " permutations to go!" << std::endl;
-
-	std::vector<int> rank;
+	std::cout << std::endl;
 	int r = 0;
+	int percent = 0;
+	std::vector<ScoredMessage> rankings;
 	for (size_t i = 0; i < keys.size(); i++) {
-		temp = encode(ciphertext, keys[i], true);
-		rank.push_back(prob_score(temp));
-		messages.push_back(temp);
+		temp = subst::encode(ciphertext, keys[i], true);
+		rankings.push_back(ScoredMessage(temp));
+		if((100*i) / keys.size() != percent){
+			percent = (100*i) / keys.size();
+			std::cout << "\r" << percent << "\% complete";
+		}
 	}
-
-	std::vector<int>::iterator maximum = std::max_element(rank.begin(), rank.end());
-	std::vector<int>::iterator minimum = std::min_element(rank.begin(), rank.end());
-
-	int idx = std::distance(rank.begin(), maximum);
-	std::cout << ciphertext << "\n\n";
-	std::cout << messages[idx] << "\n\n";
-	std::cout << "Max: " << *maximum << "\tMin: " << *minimum;
+	std::cout << "\n-------------------" << std::endl;
+	std::sort(rankings.begin(), rankings.end());
+	for (size_t i = rankings.size() - 1; i > rankings.size() - 6; i--) {
+		std::cout << subst::invert(keys[i], true) << "   " << rankings[i].score << ":\n";
+		utils::print_color(rankings[i].message);
+		std::cout << "\n\n";
+	}
 
 }
 
@@ -84,13 +93,13 @@ void test(){
 	"They are locations in process-specific virtual memory space and the "
 	"operating system then allocates parts of the physical memory chip to store "
 	"the content of the parts where the process actually stores anything on demand";
-	sanitize(s);
-	std::string key = null_key();
+	utils::sanitize(s);
+	std::string key = subst::null_key();
 	std::cout << key << std::endl;
-	shuffle(key);
+	utils::shuffle(key);
 	std::cout << key << std::endl;
 	std::cout << s << "\n\n";
-	encode(s, key);
+	subst::encode(s, key);
 	std::cout << s << "\n\n";
 	autosolve(s);
 }
@@ -118,9 +127,8 @@ void write(std::string filename, std::string data){
 
 int main(int argc, char* argv[]){
 	load_word_list();
-
 	int c;
-
+	time_t wibbly = clock();
 	std::string avalue_str;
 	std::string dvalue_str;
 	std::string evalue_str;
@@ -136,63 +144,78 @@ int main(int argc, char* argv[]){
 		int this_option_optind = optind ? optind : 1;
 		switch (c) {
 			case 'a':
-				avalue_str = std::string(optarg);
-				sanitize(avalue_str);
-				a_opt = true;
-				break;
+			avalue_str = std::string(optarg);
+			a_opt = true;
+			break;
 			case 'd':
-				d_opt = true;
-				dvalue_str = std::string(optarg);
-				break;
+			d_opt = true;
+			dvalue_str = std::string(optarg);
+			break;
 			case 'e':
-				e_opt = true;
-				evalue_str = std::string(optarg);
-				break;
+			e_opt = true;
+			evalue_str = std::string(optarg);
+			break;
 			case 'f':
-				f_opt = true;
-				break;
+			f_opt = true;
+			break;
 			case 'h':
-				std::cout << help << std::endl;
-				return 0;
+			std::cout << help << std::endl;
+			return 0;
 			case 'k':
-				k_opt = true;
-				kvalue_str = std::string(optarg);
-				break;
+			k_opt = true;
+			kvalue_str = std::string(optarg);
+			break;
 			case 'o':
-				o_opt = true;
-				ovalue_str = std::string(optarg);
-				break;
+			o_opt = true;
+			ovalue_str = std::string(optarg);
+			break;
 			case 't':
-				test();
-				break;
+			test();
+			break;
 			default:
-				std::cout << "Bruh." << std::endl;
-				break;
+			std::cout << "Bruh." << std::endl;
+			break;
 		}
 	}
+
 	if(a_opt){
 		if(f_opt){ avalue_str = read(avalue_str); }
-		sanitize(avalue_str);
-		autosolve(avalue_str);
+		utils::sanitize(avalue_str);
+		try{
+			autosolve(avalue_str);
+		}
+		catch(const char* e){
+			std::cerr << e << std::endl;
+			return 0;
+		}
+		catch(...){
+			std::cerr << "Unknown exception" << std::endl;
+		}
+
 		return 0;
 	}
 	if(e_opt){
 		if(f_opt){ evalue_str = read(evalue_str); }
 		if(!k_opt){
-			kvalue_str = null_key();
-			shuffle(kvalue_str);
+			kvalue_str = subst::null_key();
+			utils::shuffle(kvalue_str);
 			std::cout << "Using randomly generated key: " << kvalue_str << std::endl;
 		}
-		sanitize(evalue_str);
-		encode(evalue_str, kvalue_str);
+		utils::sanitize(evalue_str);
+		subst::encode(evalue_str, kvalue_str);
 		if(!o_opt){ std::cout << evalue_str << std::endl; }
 		else{ write(ovalue_str, evalue_str); }
 	}
 	if(d_opt && k_opt){
 		if(f_opt){ dvalue_str = read(dvalue_str); }
-		sanitize(dvalue_str);
-		decode(dvalue_str, kvalue_str);
+		utils::sanitize(dvalue_str);
+		subst::decode(dvalue_str, kvalue_str);
 		std::cout << dvalue_str << std::endl;
 	}
+
+
+	wibbly = clock() - wibbly;
+	float elapsed = ((float)wibbly)/((float)CLOCKS_PER_SEC);
+	std::cout << "\n\n" << elapsed << " seconds." << std::endl;
 	return 0;
 }

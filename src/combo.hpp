@@ -3,16 +3,16 @@
 
 class odometer {
 private:
+  bool finished;
   int numRotors;
   std::string vals;
   std::vector<int> indecies;
-  bool finished;
 public:
-  odometer();
   odometer (std::string values, int n);
-  void advance(int);
+  odometer();
   std::string read_rotors();
   std::vector<std::string> combos();
+  void advance(int);
   //virtual ~odometer ();
 };
 
