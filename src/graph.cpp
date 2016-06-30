@@ -1,10 +1,11 @@
 #include "analyze.hpp"
+#include "crypto_utils.hpp"
 #include "graph.hpp"
 #include "process.hpp"
 
 #include <iostream>
 
-Graph::Graph(const std::vector<std::vector<std::string> >& data){
+Graph::Graph(const utils::VVString& data){
 	verts = data;
 	key = std::string(26, '*');
 	numcalls = 0;
@@ -20,9 +21,9 @@ std::list<std::string> Graph::get_key_list(){
 	return keylist;
 }
 
-std::vector<std::string> Graph::get_key_vec(){
+utils::VString Graph::get_key_vec(){
 	std::list<std::string> l = get_key_list();
-	std::vector<std::string> v{ make_move_iterator(begin(l)), make_move_iterator(end(l)) };
+	utils::VString v{ make_move_iterator(begin(l)), make_move_iterator(end(l)) };
 	return v;
 }
 

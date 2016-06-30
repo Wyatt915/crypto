@@ -1,10 +1,10 @@
 CC=g++
-CFLAGS=-c -std=c++11 -Wl,--stack,4194304
+CFLAGS=-c -std=c++11
 
 all: crypto
 
 crypto: analyze.o combo.o crypto_utils.o graph.o Main.o process.o substitution.o wordlist.o
-	$(CC) -Wl,--stack,4194304 analyze.o combo.o crypto_utils.o graph.o Main.o process.o substitution.o wordlist.o -o crypto.exe
+	$(CC) analyze.o combo.o crypto_utils.o graph.o Main.o process.o substitution.o wordlist.o -o crypto.exe
 
 analyze.o: analyze.cpp
 	$(CC) $(CFLAGS) analyze.cpp

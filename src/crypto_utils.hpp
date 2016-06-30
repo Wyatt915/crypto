@@ -4,6 +4,9 @@
 
 
 namespace utils{
+    typedef std::vector<std::string> VString;
+    typedef std::vector<std::vector<std::string> > VVString;
+
     int binary_search(std::string what);
     std::string char_vector_to_string(std::vector<char>);
     std::vector<std::string> parse(std::string message);
@@ -20,7 +23,7 @@ namespace utils{
     void shuffle(std::string& in);
 }
 
-struct ChaPair{
+struct CharPair{
     char x, mapsTo;
 };
 

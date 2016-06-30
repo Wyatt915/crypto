@@ -1,6 +1,6 @@
 #include "analyze.hpp"
 #include "crypto_utils.hpp"
-#include "wordlist.h"
+#include "wordlist.hpp"
 #include <algorithm>
 #include <cstdlib>
 #include <ctime>
@@ -17,24 +17,27 @@ crypto_error::crypto_error(std::string err){
 
 namespace utils{
 
+typedef std::vector<std::string> VString;
+typedef std::vector<std::vector<std::string> > VVString;
+
 bool consecutive_spaces(char lhs, char rhs) { return (lhs == rhs) && (lhs == ' '); }
 
-//returns the index of [what] in [wordlist].  returns -1 for an unsucessful search
+//returns the index of [what] in [WORDLIST].  returns -1 for an unsucessful search
 int binary_search(std::string what){
     int lower_bound = 0;
-    int upper_bound = wordlist.size() - 1;
+    int upper_bound = WORDLIST.size() - 1;
     int pivot = 0;
     while(lower_bound <= upper_bound){
         pivot = floor((upper_bound + lower_bound)/2);
-        if(wordlist[pivot] < what){
+        if(WORDLIST[pivot] < what){
             lower_bound = pivot + 1;
             continue;
         }
-        if(wordlist[pivot] > what){
+        if(WORDLIST[pivot] > what){
             upper_bound = pivot - 1;
             continue;
         }
-        if(wordlist[pivot] == what){ return pivot; }
+        if(WORDLIST[pivot] == what){ return pivot; }
     }
     return -1;
 }

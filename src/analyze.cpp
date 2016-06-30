@@ -1,6 +1,6 @@
 #include "analyze.hpp"
 #include "combo.hpp"
-#include "wordlist.h"
+#include "wordlist.hpp"
 #include "process.hpp"
 #include "crypto_utils.hpp"
 
@@ -212,20 +212,14 @@ namespace analyze{
 	}
 
 	int prob_score(std::string plaintext){
-		std::vector<std::string> parsed;
-		std::string temp;
-		std::stringstream s(plaintext);
-		while(s >> temp){
-			parsed.push_back(temp);
-			temp.clear();
-		}
+		utils::VString parsed = utils::parse(plaintext);
 		int idx = 0;
 		int score = 0;
 
 		for (size_t i = 0; i < parsed.size(); i++) {
 			idx = utils::binary_search(parsed[i]);
 			if(idx > -1){
-				score += freqs[idx];
+				score += FREQLIST[idx];
 			}
 			else{
 				score -= 2 * AVERAGE_FREQ;
@@ -242,7 +236,7 @@ namespace analyze{
 		return true;
 	}
 
-	//true if [word] exists in wordlist
+	//true if [word] exists in WORDLIST
 	bool is_known(std::string word){
 		int idx = utils::binary_search(word);
 		if(idx > -1){ return true; }

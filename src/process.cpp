@@ -2,13 +2,13 @@
 #include "combo.hpp"
 #include "crypto_utils.hpp"
 #include "process.hpp"
-#include "wordlist.h"
+#include "wordlist.hpp"
 
 #include <iostream>
 
 namespace process{
 
-	std::string generate_key(std::vector<ChaPair> map){
+	std::string generate_key(std::vector<CharPair> map){
 		std::string out = std::string(26, '*');
 		for (size_t i = 0; i < map.size(); i++)
 		{
@@ -18,9 +18,9 @@ namespace process{
 	}
 
 	//x and mapsto will always be the same length
-	std::vector<ChaPair> make_chapair_vec(std::string x, std::string mapsto){
-		std::vector<ChaPair> out;
-		ChaPair temp;
+	std::vector<CharPair> make_charPair_vec(std::string x, std::string mapsto){
+		std::vector<CharPair> out;
+		CharPair temp;
 		for (size_t i = 0; i < x.length(); i++)
 		{
 			temp.x = x[i];
@@ -32,7 +32,7 @@ namespace process{
 
 	//returns a single key from a std::vector of incomplete keys
 	//which have been determined not to conflict.
-	std::string merge_keys(std::vector<std::string> keys){
+	std::string merge_keys(utils::VString keys){
 		std::string out = std::string(26, '*');	//26 '*'s
 		for (size_t i = 0; i < keys.size(); i++)
 		{
@@ -47,7 +47,7 @@ namespace process{
 	}
 
 	std::string merge_keys(std::list<std::string> l){
-		std::vector<std::string> keys{ make_move_iterator(begin(l)), make_move_iterator(end(l)) };
+		utils::VString keys{ make_move_iterator(begin(l)), make_move_iterator(end(l)) };
 		std::string out = std::string(26, '*');	//26 '*'s
 		for (size_t i = 0; i < keys.size(); i++)
 		{
@@ -88,8 +88,8 @@ namespace process{
 		return factorial(n) / factorial(n-r);
 	}
 
-	std::vector<std::string> fill_blanks(std::string ciphertext, std::string plaintext, std::string key){
-		std::vector<std::string> out;
+	utils::VString fill_blanks(std::string ciphertext, std::string plaintext, std::string key){
+		utils::VString out;
 		std::vector<int> blankSpots;
 
 		std::vector<bool> u = analyze::used_unknowns(ciphertext, plaintext);
@@ -100,11 +100,13 @@ namespace process{
 				numMissing++;
 			}
 		}
-		std::cout << "There are " << nPr(analyze::missing_key_values(key).length(), numMissing) << " permutations to check. Continue (y/n)? ";
+		std::cout << "There are "
+			<< nPr(analyze::missing_key_values(key).length(), numMissing)
+			<< " permutations to check. Continue (y/n)? ";
 		char choice;
 		std::cin >> choice;
 		if(!(choice == 'Y' || choice == 'y')){ std::exit(0); }
-		std::vector<std::string> perms = combos(numMissing, analyze::missing_key_values(key));
+		utils::VString perms = combos(numMissing, analyze::missing_key_values(key));
 
 		for (size_t i = 0; i < perms.size(); i++){
 			out.push_back(key);
@@ -123,17 +125,16 @@ namespace process{
 		return false;
 	}
 
-	void match_partial_words(std::string part){
+	utils::VString match_partial_words(std::string part){
 		std::list<std::string> m;
 		for(size_t i = 0; i < LENGTH_OF_LIST; i++){
-			if(wordlist[i].length() == part.length()){
-				m.push_back(wordlist[i]);
+			if(WORDLIST[i].length() == part.length()){
+				m.push_back(WORDLIST[i]);
 			}
 		}
 		std::list<std::string>::iterator iter = m.begin();
 		std::string current;
 		for(size_t i = 0; i < part.length(); i++){
-			std::cout << "Elements: " << m.size() << std::endl;
 			if(part[i] == '*'){ continue ;}
 			else{
 				while(iter != m.end()){
@@ -145,7 +146,6 @@ namespace process{
 			}
 			iter = m.begin();
 		}
-		std::vector<std::string> v{ make_move_iterator(begin(m)), make_move_iterator(end(m)) };
-		utils::print_list(v, '\n');
+		return utils::VString{ make_move_iterator(begin(m)), make_move_iterator(end(m)) };
 	}
 }

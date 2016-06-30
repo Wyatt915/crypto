@@ -1,15 +1,16 @@
+#include "crypto_utils.hpp"
 #include "superlist.inc"
-#include "wordlist.h"
+#include "wordlist.hpp"
 
 #include <sstream>
 
-std::vector<std::string> temp;
+utils::VString temp;
 std::vector<int> ftemp;
 
 
-std::vector<std::string> wordlist = temp;	//"definition"
-std::vector<std::string> patt = temp;
-std::vector<int> freqs = ftemp;
+utils::VString WORDLIST = temp;	//"definition"
+utils::VString PATTLIST = temp;
+std::vector<int> FREQLIST = ftemp;
 int LENGTH_OF_LIST = 0;
 
 const int AVERAGE_FREQ = 50;	//Really it's closer to 49.9102541882083
@@ -21,8 +22,8 @@ void init_words(){
 	std::string current = "";
 	int f;
 	while (str >> current >> f){
-		wordlist.push_back(current);
-		freqs.push_back(f);
+		WORDLIST.push_back(current);
+		FREQLIST.push_back(f);
 		LENGTH_OF_LIST++;
 	}
 }
