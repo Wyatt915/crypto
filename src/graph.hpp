@@ -9,6 +9,7 @@ public:
 	int numcalls;
 	std::list<std::string> get_key_list();
 	std::vector<std::string> get_key_vec();
+    bool debug = false;
 private:
 	std::list<std::string> keylist;
 	std::string key;	//cumulative key being generated

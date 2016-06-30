@@ -15,9 +15,6 @@ std::list<std::string> Graph::get_key_list(){
 	dft(0, 0);
 	keylist.sort();
 	keylist.unique();
-	/*if (!key_conflict(keylist)){
-		merge_keys(keylist);
-	}*/
 	return keylist;
 }
 
@@ -32,13 +29,14 @@ utils::VString Graph::get_key_vec(){
 */
 void Graph::dft(unsigned int col, unsigned int row){
 	numcalls++;
-	//std::cout << numcalls << std::endl;
-	//If there are no previous columns and we have gone past the end of the current column
+    if(debug){std::cout << "dft() called " << numcalls << " times.  rows: " << verts[0].size() << std::endl;}
+	//If there are no previous columns and we have gone past the end of the current column, we are finished.
 	if (col == 0 && row >= verts[col].size()){
 		return;
 	}
 	//If we have gone past the end of the current column
 	if (row >= verts[col].size()){
+        if(debug){std::cout << "end of column" << col << std::endl;}
 		int backOfPath = path.back();
 		path.pop_back();	//remove so it can be replaced.
 		keysFromPath.pop_back();
@@ -56,6 +54,7 @@ void Graph::dft(unsigned int col, unsigned int row){
 	else {
 		//if the current vert does not conflict with those before it
 		if (!analyze::key_conflict(verts[col][row], keysFromPath.back())){
+            if(debug){std::cout << "There is not a conflict." << std::endl;}
 			path.push_back(row);
 			key = process::merge_keys(keysFromPath.back(), verts[col][row]);
 			keysFromPath.push_back(key);
@@ -79,6 +78,7 @@ void Graph::dft(unsigned int col, unsigned int row){
 		}
 		//if the current vert does conflict
 		else{
+            if(debug){std::cout << "There is a conflict." << std::endl;}
 			//If we are not in the last row of the current column
 			if (row < verts[col].size()) {
 				dft(col, row + 1);	//move down the column

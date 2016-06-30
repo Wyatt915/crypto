@@ -3,13 +3,14 @@
 #include "crypto_utils.hpp"
 #include "process.hpp"
 #include "wordlist.hpp"
+#include "substitution.hpp"
 
 #include <iostream>
 
 namespace process{
 
 	std::string generate_key(std::vector<CharPair> map){
-		std::string out = std::string(26, '*');
+		std::string out = subst::empty_key();
 		for (size_t i = 0; i < map.size(); i++)
 		{
 			out[map[i].x - 'A'] = map[i].mapsTo;
@@ -33,7 +34,7 @@ namespace process{
 	//returns a single key from a std::vector of incomplete keys
 	//which have been determined not to conflict.
 	std::string merge_keys(utils::VString keys){
-		std::string out = std::string(26, '*');	//26 '*'s
+		std::string out = subst::empty_key();	//26 '*'s
 		for (size_t i = 0; i < keys.size(); i++)
 		{
 			for (size_t j = 0; j < keys[i].length(); j++)
@@ -48,7 +49,7 @@ namespace process{
 
 	std::string merge_keys(std::list<std::string> l){
 		utils::VString keys{ make_move_iterator(begin(l)), make_move_iterator(end(l)) };
-		std::string out = std::string(26, '*');	//26 '*'s
+		std::string out = subst::empty_key();	//26 '*'s
 		for (size_t i = 0; i < keys.size(); i++)
 		{
 			for (size_t j = 0; j < keys[i].length(); j++)
@@ -62,7 +63,7 @@ namespace process{
 	}
 
 	std::string merge_keys(std::string key1, std::string key2){
-		std::string out = std::string(26, '*');	//26 '*'s
+		std::string out = subst::empty_key();	//26 '*'s
 		for (int i = 0; i < 26; i++){
 			if (key1[i] != '*'){
 				out[i] = key1[i];
@@ -88,7 +89,9 @@ namespace process{
 		return factorial(n) / factorial(n-r);
 	}
 
+    //returns a vector of keys
 	utils::VString fill_blanks(std::string ciphertext, std::string plaintext, std::string key){
+        subst::invert(key);
 		utils::VString out;
 		std::vector<int> blankSpots;
 
@@ -100,12 +103,6 @@ namespace process{
 				numMissing++;
 			}
 		}
-		std::cout << "There are "
-			<< nPr(analyze::missing_key_values(key).length(), numMissing)
-			<< " permutations to check. Continue (y/n)? ";
-		char choice;
-		std::cin >> choice;
-		if(!(choice == 'Y' || choice == 'y')){ std::exit(0); }
 		utils::VString perms = combos(numMissing, analyze::missing_key_values(key));
 
 		for (size_t i = 0; i < perms.size(); i++){

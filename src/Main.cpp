@@ -39,25 +39,31 @@ struct ScoredMessage{
 };
 
 bool operator<(const ScoredMessage& lhs, const ScoredMessage& rhs){
-    return lhs.score < rhs.score;
+    if(lhs.score != rhs.score){
+        return lhs.score < rhs.score;
+    }
+    else{ return lhs.message > rhs.message; }
+}
+
+bool operator==(const ScoredMessage& lhs, const ScoredMessage& rhs){
+    return (lhs.score == rhs.score && lhs.message == rhs.message);
 }
 
 void autosolve(std::string ciphertext){
-    time_t wibbly = clock();
-    utils::VString incompleteKeys = subst::solve_by_pattern(ciphertext);
-    wibbly = clock() - wibbly;
-    float elapsed = ((float)wibbly)/((float)CLOCKS_PER_SEC);
-    std::cout << "\n\n" << elapsed << " seconds." << std::endl;
-    std::string courseKey = incompleteKeys[0];
-    subst::fine_solve(ciphertext, courseKey);
+    utils::VString courseKeys = subst::solve_by_pattern(ciphertext);
+    utils::VString fineKeys = subst::fine_solve(ciphertext, courseKeys);
+    utils::VString incompleteKeys;
+
+    if(fineKeys.size() > 0){
+        incompleteKeys = fineKeys;
+    }
+    else{ incompleteKeys = courseKeys; }
+
     utils::VString messages;
     std::string temp;
     for (size_t i = 0; i < incompleteKeys.size(); i++){
-        subst::invert(incompleteKeys[i]);	//VERY IMPORTANT (to maintain proper mapping in the fill_blanks function)
-        temp = subst::encode(ciphertext, incompleteKeys[i], true);
+        temp = subst::decode(ciphertext, incompleteKeys[i], true);
         messages.push_back(temp);
-        utils::print_color(temp);
-        std::cout << std::endl;
     }
 
     utils::VString keys, tempkeys;
@@ -67,22 +73,19 @@ void autosolve(std::string ciphertext){
     }
 
     messages.clear();
-    std::cout << std::endl;
     int r = 0;
     int percent = 0;
     std::vector<ScoredMessage> rankings;
     for (size_t i = 0; i < keys.size(); i++) {
         temp = subst::encode(ciphertext, keys[i], true);
         rankings.push_back(ScoredMessage(temp));
-        if((100*i) / keys.size() != percent){
-            percent = (100*i) / keys.size();
-            std::cout << "\r" << percent << "\% complete";
-        }
     }
     std::cout << "\n-------------------" << std::endl;
-    std::sort(rankings.begin(), rankings.end());
-    for (size_t i = rankings.size() - 1; i > rankings.size() - 26; i--) {
-        std::cout << subst::invert(keys[i], true) << "   " << rankings[i].score << ":\n";
+    std::sort(rankings.rbegin(), rankings.rend());//sort in reverse (greatist to least)
+    std::vector<ScoredMessage>::iterator last = std::unique(rankings.begin(), rankings.end());
+    rankings.erase(last, rankings.end());
+    for (size_t i = 0; i < 3 && i < rankings.size(); i++) {
+        std::cout << keys[i] << "   " << rankings[i].score << ":\n";
         utils::print_color(rankings[i].message);
         std::cout << "\n\n";
     }
