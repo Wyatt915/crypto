@@ -2,6 +2,7 @@
 #include "crypto_utils.hpp"
 #include "substitution.hpp"
 #include "wordlist.hpp"
+#include "vigenere.hpp"
 #include "process.hpp"
 
 #include <algorithm>
@@ -129,10 +130,23 @@ void write(std::string filename, std::string data){
     }
 }
 
+void crossword(std::string part){
+    std::vector<std::string> matches = process::match_partial_words(part);
+    std::vector<ScoredMessage> scored;
+    for(std::string s : matches){
+        scored.push_back(ScoredMessage(s));
+    }
+    std::sort(scored.rbegin(), scored.rend());
+    for (size_t i = 0; i < 100 && i < scored.size(); i++) {
+        std::cout << scored[i].message << std::endl;
+    }
+}
+
 int main(int argc, char* argv[]){
     load_word_list();
     int c;
-
+    std::cout << vigenere::encode("ATTACKATDAWN", "LEMON") << std::endl;
+    std::cout << vigenere::decode("LXFOPVEFRNHR", "LEMON") << std::endl;
     std::string avalue_str;
     std::string dvalue_str;
     std::string evalue_str;
@@ -144,13 +158,16 @@ int main(int argc, char* argv[]){
     bool f_opt = false;
     bool k_opt = false;
     bool o_opt = false;
-    while ( (c = getopt(argc, argv, "a:d:e:k:o:fht")) != -1 ) {
+    while ( (c = getopt(argc, argv, "a:c:d:e:k:o:fht")) != -1 ) {
         int this_option_optind = optind ? optind : 1;
         switch (c) {
             case 'a':
             avalue_str = std::string(optarg);
             a_opt = true;
             break;
+            case 'c':
+            crossword(std::string(optarg));
+            return 0;
             case 'd':
             d_opt = true;
             dvalue_str = std::string(optarg);

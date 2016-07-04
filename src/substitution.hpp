@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <vector>
 
 namespace subst{
 	std::string decode(std::string text, std::string key, bool);

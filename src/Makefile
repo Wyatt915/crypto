@@ -1,10 +1,10 @@
 CC=g++
-CFLAGS=-c -std=c++11 -fstack-check
+CFLAGS=-c -std=c++11
 
 all: crypto
 
-crypto: analyze.o combo.o crypto_utils.o graph.o Main.o process.o substitution.o wordlist.o
-	$(CC) -fstack-check analyze.o combo.o crypto_utils.o graph.o Main.o process.o substitution.o wordlist.o -o crypto.exe
+crypto: analyze.o combo.o crypto_utils.o graph.o Main.o process.o substitution.o vigenere.o wordlist.o
+	$(CC) analyze.o combo.o crypto_utils.o graph.o Main.o process.o substitution.o vigenere.o wordlist.o -o crypto.exe
 
 analyze.o: analyze.cpp
 	$(CC) $(CFLAGS) analyze.cpp
@@ -27,7 +27,10 @@ process.o: process.cpp
 substitution.o: substitution.cpp
 	$(CC) $(CFLAGS) substitution.cpp
 
-wordlist.o: wordlist.cpp
+vigenere.o: vigenere.cpp
+	$(CC) $(CFLAGS) vigenere.cpp
+
+wordlist.o: wordlist.cpp superlist.inc
 	$(CC) $(CFLAGS) wordlist.cpp
 
 clean:
