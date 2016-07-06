@@ -145,8 +145,6 @@ void crossword(std::string part){
 int main(int argc, char* argv[]){
     load_word_list();
     int c;
-    std::cout << vigenere::encode("ATTACKATDAWN", "LEMON") << std::endl;
-    std::cout << vigenere::decode("LXFOPVEFRNHR", "LEMON") << std::endl;
     std::string avalue_str;
     std::string dvalue_str;
     std::string evalue_str;
