@@ -86,9 +86,9 @@ namespace subst{
     //If a word has a lot of letters in it, it has more entropy.  However,
     //if there are many words that match its pattern or signature, than we
     //actually have less usable information than a word with only a few matches.
-    float entropy(const utils::VString& column){
-        float length = column[0].length();
-        float size = column.size();
+    double entropy(const utils::VString& column){
+        double length = column[0].length();
+        double size = column.size();
         return length/(size);
     }
 
@@ -138,7 +138,7 @@ namespace subst{
 
         iter = in.begin();
         int max = 4096; //maximum search space (2^15)
-        float searchSpace = 1;
+        double searchSpace = 1;
         while (searchSpace < max && iter != in.end()){
             current = *iter;
             searchSpace += current.size();

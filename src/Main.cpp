@@ -86,7 +86,7 @@ void autosolve(std::string ciphertext){
     std::vector<ScoredMessage>::iterator last = std::unique(rankings.begin(), rankings.end());
     rankings.erase(last, rankings.end());
     for (size_t i = 0; i < 3 && i < rankings.size(); i++) {
-        std::cout << keys[i] << "   " << rankings[i].score << ":\n";
+        std::cout << subst::invert(keys[i], true) << "   " << rankings[i].score << ":\n";
         utils::print_color(rankings[i].message);
         std::cout << "\n\n";
     }
@@ -100,11 +100,15 @@ void test(){
     "operating system then allocates parts of the physical memory chip to store "
     "the content of the parts where the process actually stores anything on demand";
     utils::sanitize(s);
+    //std::cout << "chi-squared stat: " << analyze::chi_sq(s) << std::endl;
+    //std::cout << "index of coincidence: " << analyze::idx_coin(s) << std::endl;
     std::cout << "Plaintext:" << std::endl << s << "\n\n";
     std::string key = subst::null_key();
     utils::shuffle(key);
     std::cout << "Randomly generated key: " << key << "\n\n";
     subst::encode(s, key);
+    //std::cout << "chi-squared stat: " << analyze::chi_sq(s) << std::endl;
+    //std::cout << "index of coincidence: " << analyze::idx_coin(s) << std::endl;
     std::cout << "Ciphertext:\n" << s << "\n\n";
     autosolve(s);
 }
@@ -142,97 +146,154 @@ void crossword(std::string part){
     }
 }
 
+void full_analysis(std::string subject){
+    utils::sanitize(subject);
+    utils::remove_dpw(subject);
+    //write(fname + ".sanitized", subject + "\n");
+    std::string results;
+    std::cout << "CHI-SQUARED STATISTIC: " << analyze::chi_sq(subject) << std::endl;
+    std::cout << "INDEX OF COINCIDENCE:  " << analyze::idx_coin(subject) << std::endl;
+    std::cout << "CHARACTER COUNTS:\n";
+    std::array<long int, 26> c = analyze::count_chars(subject);
+    for(int i = 0; i < 26; i++){std::cout << (char)(i + 'A') << '\t' << c[i] << '\n'; }
+    std::cout << "\nTOTAL: " << std::accumulate(begin(c), end(c),0) << "\n\n";
+
+    std::cout << "CHARACTER FREQUENCY:\n";
+    std::array<double, 26> f = analyze::frequency(subject);
+    for(int i = 0; i < 26; i++){std::cout << (char)(i + 'A') << '\t' << f[i] << '\n'; }
+    std::cout << "\nSUM: " << std::accumulate(begin(f), end(f), 0.0) << "\n\n";
+    std::cout << "\n\nHISTOGRAM:\n\n" << std::endl;
+    analyze::print_histogram(subject, 16);
+}
+
 int main(int argc, char* argv[]){
-    load_word_list();
     int c;
-    std::string avalue_str;
-    std::string dvalue_str;
-    std::string evalue_str;
-    std::string kvalue_str;
-    std::string ovalue_str;
+    std::string a_opt_arg, d_opt_arg, e_opt_arg, k_opt_arg, i_opt_arg, o_opt_arg;
     bool a_opt = false;
     bool d_opt = false;
     bool e_opt = false;
-    bool f_opt = false;
+    bool i_opt = false;
     bool k_opt = false;
     bool o_opt = false;
-    while ( (c = getopt(argc, argv, "a:c:d:e:k:o:fht")) != -1 ) {
+
+    static struct option long_options[] = {
+        {"analyze",     optional_argument, 0, 'a'},
+        {"decode",      optional_argument, 0, 'd'},
+        {"encode",      optional_argument, 0, 'e'},
+        {"help",        no_argument,       0, 'h'},
+        {"input-file",  required_argument, 0, 'i'},
+        {"key",         required_argument, 0, 'k'},
+        {"output-file", required_argument, 0, 'o'},
+        {"test",        no_argument,       0, 't'},
+        {0, 0, 0, 0}
+    };
+
+    while ( (c = getopt_long(argc, argv, "a::c:d::e::i:k:o:ht", long_options, NULL)) != -1 ) {
         int this_option_optind = optind ? optind : 1;
         switch (c) {
             case 'a':
-            avalue_str = std::string(optarg);
-            a_opt = true;
-            break;
+                if(optarg != NULL){
+                    a_opt_arg = std::string(optarg);
+                }
+                a_opt = true;
+                break;
             case 'c':
-            crossword(std::string(optarg));
-            return 0;
+                crossword(std::string(optarg));
+                return 0;
             case 'd':
-            d_opt = true;
-            dvalue_str = std::string(optarg);
-            break;
+                d_opt = true;
+                if(optarg != NULL){
+                    d_opt_arg = std::string(optarg);
+                }
+                break;
             case 'e':
-            e_opt = true;
-            evalue_str = std::string(optarg);
-            break;
-            case 'f':
-            f_opt = true;
-            break;
+                e_opt = true;
+                if(optarg != NULL){
+                    e_opt_arg = std::string(optarg);
+                }
+                break;
             case 'h':
-            std::cout << help << std::endl;
-            return 0;
+                std::cout << help << std::endl;
+                return 0;
+            case 'i':
+                i_opt = true;
+                i_opt_arg = std::string(optarg);
+                break;
             case 'k':
-            k_opt = true;
-            kvalue_str = std::string(optarg);
-            break;
+                k_opt = true;
+                k_opt_arg = std::string(optarg);
+                break;
             case 'o':
-            o_opt = true;
-            ovalue_str = std::string(optarg);
-            break;
+                o_opt = true;
+                o_opt_arg = std::string(optarg);
+                break;
             case 't':
-            test();
-            break;
+                load_word_list();
+                test();
+                return 0;
+            case ':':   /* missing option argument */
+                fprintf(stderr, "%s: option `-%c' requires an argument\n",
+                argv[0], optopt);
+                break;
+            case '?':    /* invalid option */
             default:
-            std::cout << "Bruh." << std::endl;
-            break;
+                fprintf(stderr, "%s: option `-%c' is invalid: ignored\n",
+                argv[0], optopt);
+                break;
         }
     }
 
     if(a_opt){
-        if(f_opt){ avalue_str = read(avalue_str); }
-        utils::sanitize(avalue_str);
-        try{
-            autosolve(avalue_str);
+        if(i_opt && a_opt_arg.length() > 0){
+            std::cerr << "'--input-file' and '--analyze' cannot both have arguments.\n";
+            return 1;
         }
-        catch(const char* e){
-            std::cerr << e << std::endl;
-            return 0;
+        if(i_opt){ a_opt_arg = read(i_opt_arg); }
+        else if(a_opt_arg == ""){
+            std::cerr << "'analyze' must have an argument if no input file is specified.\n";
+            return 1;
         }
-        catch(...){
-            std::cerr << "Unknown exception" << std::endl;
-        }
-
+        full_analysis(a_opt_arg);
         return 0;
     }
     if(e_opt){
-        if(f_opt){ evalue_str = read(evalue_str); }
-        if(!k_opt){
-            kvalue_str = subst::null_key();
-            utils::shuffle(kvalue_str);
-            std::cout << "Using randomly generated key: " << kvalue_str << std::endl;
+        if(i_opt && e_opt_arg.length() > 0){
+            std::cerr << "'--input-file' and '--encode' cannot both have arguments.\n";
+            return 1;
         }
-        utils::sanitize(evalue_str);
-        subst::encode(evalue_str, kvalue_str);
-        if(!o_opt){ std::cout << evalue_str << std::endl; }
-        else{ write(ovalue_str, evalue_str); }
+        if(i_opt){ e_opt_arg = read(i_opt_arg); }
+        else if(e_opt_arg == ""){
+            std::cerr << "'--encode' must have an argument if no input file is specified.\n";
+            return 1;
+        }
+        if(!k_opt){
+            k_opt_arg = subst::null_key();
+            utils::shuffle(k_opt_arg);
+            std::cout << "Using randomly generated key: " << k_opt_arg << std::endl;
+        }
+        utils::sanitize(e_opt_arg);
+        subst::encode(e_opt_arg, k_opt_arg);
+        if(!o_opt){ std::cout << e_opt_arg << std::endl; }
+        else{ write(o_opt_arg, e_opt_arg); }
     }
-    if(d_opt && k_opt){
-        if(f_opt){ dvalue_str = read(dvalue_str); }
-        utils::sanitize(dvalue_str);
-        subst::decode(dvalue_str, kvalue_str);
-        std::cout << dvalue_str << std::endl;
+    if(d_opt){
+        if(i_opt && d_opt_arg.length() > 0){
+            std::cerr << "'--input-file' and '--decode' cannot both have arguments.\n";
+            return 1;
+        }
+        if(i_opt){ d_opt_arg = read(i_opt_arg); }
+        else if(d_opt_arg == ""){
+            std::cerr << "'--decode' must have an argument if no input file is specified.\n";
+            return 1;
+        }
+        utils::sanitize(d_opt_arg);
+        if(k_opt){
+            subst::decode(d_opt_arg, k_opt_arg);
+            std::cout << d_opt_arg << std::endl;
+        } else {
+            load_word_list();
+            autosolve(d_opt_arg);
+        }
     }
-
-
-
     return 0;
 }
