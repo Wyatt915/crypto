@@ -100,17 +100,19 @@ void test(){
     "operating system then allocates parts of the physical memory chip to store "
     "the content of the parts where the process actually stores anything on demand";
     utils::sanitize(s);
-    //std::cout << "chi-squared stat: " << analyze::chi_sq(s) << std::endl;
-    //std::cout << "index of coincidence: " << analyze::idx_coin(s) << std::endl;
-    std::cout << "Plaintext:" << std::endl << s << "\n\n";
-    std::string key = subst::null_key();
-    utils::shuffle(key);
-    std::cout << "Randomly generated key: " << key << "\n\n";
-    subst::encode(s, key);
-    //std::cout << "chi-squared stat: " << analyze::chi_sq(s) << std::endl;
-    //std::cout << "index of coincidence: " << analyze::idx_coin(s) << std::endl;
-    std::cout << "Ciphertext:\n" << s << "\n\n";
-    autosolve(s);
+    // std::cout << "Plaintext:" << std::endl << s << "\n\n";
+    // std::string key = subst::null_key();
+    // utils::shuffle(key);
+    // std::cout << "Randomly generated key: " << key << "\n\n";
+    // subst::encode(s, key);
+    // std::cout << "Ciphertext:\n" << s << "\n\n";
+    // autosolve(s);
+    utils::remove_dpw(s);
+    std::string v = vigenere::encode(s,"LEMONS");
+    std::cout << v << std::endl;
+    std::string key = vigenere::guess_key(v);
+    std::cout << key << std::endl;
+    std::cout << vigenere::decode(v, key);
 }
 
 std::string read(std::string filename){
